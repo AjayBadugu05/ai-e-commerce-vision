@@ -3,7 +3,7 @@
 **AI E-Commerce Vision (ShopZap)** is a modern AI-powered e-commerce web app built with **Next.js**, **React**, **Tailwind CSS**, and the **Vercel AI SDK**.  
 It delivers an intelligent shopping experience with features like product search, personalized recommendations, AI chat support, and responsive UI — deployed on **Vercel**.
 
-🔗 Live Demo: https://ai-ecommerce-vision.vercel.app/
+🔗 Live Demo: https://ai-e-commerce-vision.vercel.app/
 
 ---
 
