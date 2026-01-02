@@ -1,73 +1,147 @@
-# Welcome to your Lovable project
+# 🎯 AI E-Commerce Vision — ShopZap
 
-## Project info
+**AI E-Commerce Vision (ShopZap)** is a modern AI-powered e-commerce web app built with **Next.js**, **React**, **Tailwind CSS**, and the **Vercel AI SDK**.  
+It delivers an intelligent shopping experience with features like product search, personalized recommendations, AI chat support, and responsive UI — deployed on **Vercel**.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+🔗 Live Demo: https://ai-ecommerce-vision.vercel.app/
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 🚀 Features
 
-**Use Lovable**
+### 🛍️ Core Shopping
+- Responsive product catalog with categories
+- Product detail pages
+- Add to cart & cart summary
+- Checkout UI (UI only — backend logic optional)
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### 🤖 AI-Driven Experience
+- AI Chat / Assistant for customer support
+- Natural language product search
+- Personalized suggestions
+- Context-aware recommendations
 
-Changes made via Lovable will be committed automatically to this repo.
+### 📦 Tech Stack
+- **Next.js (App Router)**
+- **Vercel AI SDK** for conversational and generative AI features :contentReference[oaicite:0]{index=0}
+- **React** & **Tailwind CSS**
+- (Optional) **Database** integration via API (e.g., Prisma + Neon)
 
-**Use your preferred IDE**
+---
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## 📁 Project Structure
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
 
-Follow these steps:
+📦 app
+┣ 📂 api
+┃ ┗ 📂 ai
+┃ ┗── route.js # AI chat / tool API
+┣ 📜 page.jsx # Main UI (home + shop)
+┣ 📜 cart.jsx # Cart UI
+┗📜 product/[id].jsx # Product details
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+📦 components
+┣── Navbar.jsx
+┣── ProductCard.jsx
+┣── Footer.jsx
+┗── AIChat.jsx
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+📦 lib
+┣── aiConfig.js # Vercel AI SDK config
+┗── productTools.js # Tools for AI / DB
 
-# Step 3: Install the necessary dependencies.
-npm i
+📦 styles
+┗── globals.css
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+📦 prisma/ (optional)
+┗── schema.prisma
+
+
+---
+
+## ⚡ Getting Started
+
+### 1️⃣ Clone the repository
+
+```bash
+git clone https://github.com/<your-username>/ai-ecommerce-vision.git
+cd ai-ecommerce-vision
+
+2️⃣ Install dependencies
+npm install
+# or
+pnpm install
+# or
+yarn
+
+3️⃣ Add Environment Variables
+
+Create a .env.local file:
+
+NEXT_PUBLIC_VERCEL_ENV=production
+AI_PROVIDER_API_KEY=your_api_key
+DATABASE_URL=your_db_connection (optional)
+
+
+The AI features require API keys from your LLM provider (e.g., OpenAI, Google Gemini via Vercel AI). 
+Medium
+
+4️⃣ Run locally
 npm run dev
-```
+# or
+pnpm dev
+# or
+yarn dev
 
-**Edit a file directly in GitHub**
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+Visit http://localhost:3000
 
-**Use GitHub Codespaces**
+🧠 AI Chat Integration
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+This project uses Vercel AI SDK to power the chat & intelligent search features. It handles tool calls and prompts at the edge for low-latency responses. 
+Medium
 
-## What technologies are used for this project?
+Edit the system prompt:
 
-This project is built with:
+// app/api/ai/route.js
+export const config = {
+  runtime: "edge",
+};
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+export async function POST(request) {
+  // … AI logic using Vercel AI SDK
+}
 
-## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Customize it based on your product database and use case.
 
-## Can I connect a custom domain to my Lovable project?
+📦 Deployment
 
-Yes, you can!
+This app is optimized for deployment on Vercel:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+Push code to GitHub
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Connect repo in Vercel dashboard
+
+Add environment variables in Vercel
+
+Deploy — Vercel auto builds & serves
+
+🧩 Environment Variables
+Key	Description
+AI_PROVIDER_API_KEY	API Key for your AI model provider
+NEXT_PUBLIC_BASE_URL	Frontend base URL
+DATABASE_URL	DB connection (if using Prisma)
+🙌 Contributing
+
+Contributions are welcome!
+
+Fork the repo
+
+Create a new branch
+
+Open a Pull Request
+
+📄 License
+
+MIT License © [Ajay Badugu]
