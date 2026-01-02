@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { Bot, Send, X, Maximize2, Minimize2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
 }
+
+const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
 
 export const AIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -19,7 +22,7 @@ export const AIAssistant = () => {
     },
   ]);
   const [input, setInput] = useState("");
-  const [isTyping, setIsTyping] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -31,7 +34,7 @@ export const AIAssistant = () => {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!input.trim()) return;
+    if (!input.trim() || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now().toString(),
@@ -41,25 +44,96 @@ export const AIAssistant = () => {
 
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
-    setIsTyping(true);
+    setIsLoading(true);
 
-    setTimeout(() => {
-      const responses = [
-        "Great choice! 🎯 I found some amazing deals on that! Our wireless headphones are 25% off right now. Want me to show you?",
-        "Ooh, excellent taste! ✨ That's one of our bestsellers! It has 500+ five-star reviews. Should I add it to your cart?",
-        "You're going to love this! 💕 We have that in 5 different colors. Which one catches your eye?",
-        "Smart shopping! 🛒 I can see some flash deals coming up in 2 hours. Want me to notify you when they go live?",
-      ];
+    let assistantContent = "";
 
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: responses[Math.floor(Math.random() * responses.length)],
+    try {
+      const response = await fetch(CHAT_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map((m) => ({
+            role: m.role,
+            content: m.content,
+          })),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to get response");
+      }
+
+      if (!response.body) {
+        throw new Error("No response body");
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      const updateAssistant = (content: string) => {
+        assistantContent = content;
+        setMessages((prev) => {
+          const last = prev[prev.length - 1];
+          if (last?.role === "assistant" && last.id.startsWith("stream-")) {
+            return prev.map((m, i) =>
+              i === prev.length - 1 ? { ...m, content: assistantContent } : m
+            );
+          }
+          return [
+            ...prev,
+            { id: `stream-${Date.now()}`, role: "assistant", content: assistantContent },
+          ];
+        });
       };
 
-      setMessages((prev) => [...prev, assistantMessage]);
-      setIsTyping(false);
-    }, 1200);
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+
+        let newlineIndex: number;
+        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+          let line = buffer.slice(0, newlineIndex);
+          buffer = buffer.slice(newlineIndex + 1);
+
+          if (line.endsWith("\r")) line = line.slice(0, -1);
+          if (line.startsWith(":") || line.trim() === "") continue;
+          if (!line.startsWith("data: ")) continue;
+
+          const jsonStr = line.slice(6).trim();
+          if (jsonStr === "[DONE]") break;
+
+          try {
+            const parsed = JSON.parse(jsonStr);
+            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
+            if (content) {
+              assistantContent += content;
+              updateAssistant(assistantContent);
+            }
+          } catch {
+            buffer = line + "\n" + buffer;
+            break;
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Chat error:", error);
+      const errorMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: "Oops! Something went wrong. Please try again! 😅",
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -72,7 +146,7 @@ export const AIAssistant = () => {
         >
           <Bot className="w-8 h-8 text-white" />
           {/* Notification dot */}
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center">
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center animate-wiggle">
             <Sparkles className="w-3 h-3 text-foreground" />
           </span>
         </button>
@@ -90,7 +164,7 @@ export const AIAssistant = () => {
           {/* Header */}
           <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary via-magic to-secondary text-white">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center animate-pulse-glow">
                 <Bot className="w-6 h-6" />
               </div>
               <div>
@@ -133,12 +207,12 @@ export const AIAssistant = () => {
                       : "bg-card border-2 border-border rounded-bl-md shadow-card"
                   }`}
                 >
-                  <p className="text-sm leading-relaxed">{message.content}</p>
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
                 </div>
               </div>
             ))}
 
-            {isTyping && (
+            {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
               <div className="flex justify-start">
                 <div className="bg-card border-2 border-border px-4 py-3 rounded-2xl rounded-bl-md shadow-card">
                   <div className="flex gap-1.5">
@@ -162,11 +236,12 @@ export const AIAssistant = () => {
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
                 placeholder="Ask me anything... 💬"
                 className="flex-1 h-12 px-4 rounded-2xl bg-muted border-2 border-transparent focus:border-primary focus:outline-none transition-all font-medium"
+                disabled={isLoading}
               />
               <Button
                 onClick={handleSend}
                 className="w-12 h-12 rounded-2xl bg-gradient-to-r from-primary to-magic hover:opacity-90 transition-opacity"
-                disabled={!input.trim()}
+                disabled={!input.trim() || isLoading}
               >
                 <Send className="w-5 h-5 text-white" />
               </Button>
