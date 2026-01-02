@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Outfit', 'sans-serif'],
-        display: ['Space Grotesk', 'sans-serif'],
+        sans: ['Nunito', 'sans-serif'],
+        display: ['Fredoka', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -43,6 +43,14 @@ export default {
           DEFAULT: "hsl(var(--accent))",
           foreground: "hsl(var(--accent-foreground))",
         },
+        success: {
+          DEFAULT: "hsl(var(--success))",
+          foreground: "hsl(var(--success-foreground))",
+        },
+        magic: {
+          DEFAULT: "hsl(var(--magic))",
+          foreground: "hsl(var(--magic-foreground))",
+        },
         popover: {
           DEFAULT: "hsl(var(--popover))",
           foreground: "hsl(var(--popover-foreground))",
@@ -61,11 +69,6 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
-        gold: {
-          DEFAULT: "hsl(38, 92%, 50%)",
-          light: "hsl(38, 92%, 60%)",
-          dark: "hsl(28, 92%, 45%)",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
@@ -74,6 +77,10 @@ export default {
         xl: "1.25rem",
         "2xl": "1.5rem",
         "3xl": "2rem",
+        "4xl": "3rem",
+      },
+      borderWidth: {
+        '3': '3px',
       },
       keyframes: {
         "accordion-down": {
@@ -84,48 +91,46 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "fade-in": {
-          "0%": { opacity: "0", transform: "translateY(10px)" },
-          "100%": { opacity: "1", transform: "translateY(0)" },
+        "bounce-slow": {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-15px)" },
         },
-        "scale-in": {
-          "0%": { opacity: "0", transform: "scale(0.95)" },
+        wiggle: {
+          "0%, 100%": { transform: "rotate(-3deg)" },
+          "50%": { transform: "rotate(3deg)" },
+        },
+        float: {
+          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
+          "50%": { transform: "translateY(-20px) rotate(3deg)" },
+        },
+        "pop-in": {
+          "0%": { opacity: "0", transform: "scale(0.5)" },
+          "70%": { transform: "scale(1.1)" },
           "100%": { opacity: "1", transform: "scale(1)" },
+        },
+        "slide-up": {
+          "0%": { opacity: "0", transform: "translateY(30px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
         },
         "slide-in-right": {
           "0%": { transform: "translateX(100%)", opacity: "0" },
           "100%": { transform: "translateX(0)", opacity: "1" },
         },
-        "slide-in-left": {
-          "0%": { transform: "translateX(-100%)", opacity: "0" },
-          "100%": { transform: "translateX(0)", opacity: "1" },
-        },
-        float: {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-20px)" },
-        },
-        shimmer: {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "fade-in": "fade-in 0.5s ease-out forwards",
-        "scale-in": "scale-in 0.3s ease-out forwards",
-        "slide-in-right": "slide-in-right 0.4s ease-out forwards",
-        "slide-in-left": "slide-in-left 0.4s ease-out forwards",
-        float: "float 6s ease-in-out infinite",
-        shimmer: "shimmer 2s linear infinite",
-      },
-      backdropBlur: {
-        xs: "2px",
+        "bounce-slow": "bounce-slow 3s ease-in-out infinite",
+        wiggle: "wiggle 1s ease-in-out infinite",
+        float: "float 4s ease-in-out infinite",
+        "pop-in": "pop-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards",
+        "slide-up": "slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "slide-in-right": "slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
       boxShadow: {
-        glow: "0 0 60px hsl(38 92% 50% / 0.15)",
-        "glow-lg": "0 0 100px hsl(38 92% 50% / 0.2)",
-        glass: "0 8px 32px hsl(0 0% 0% / 0.3)",
+        pop: "0 10px 40px -10px hsl(205 100% 50% / 0.3)",
+        card: "0 4px 20px hsl(220 40% 13% / 0.08)",
+        hover: "0 20px 40px hsl(220 40% 13% / 0.15)",
       },
     },
   },

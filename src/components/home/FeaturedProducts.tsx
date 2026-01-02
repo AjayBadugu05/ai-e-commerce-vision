@@ -1,6 +1,5 @@
 import { ProductCard } from "@/components/products/ProductCard";
-import { ArrowRight } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const featuredProducts = [
@@ -87,19 +86,25 @@ export const FeaturedProducts = () => {
     <section className="container mx-auto px-4 py-20">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-12">
-        <div>
-          <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">
-            Featured <span className="text-gradient-gold">Products</span>
+        <div className="animate-slide-up">
+          <div className="flex items-center gap-2 mb-2">
+            <Sparkles className="w-6 h-6 text-accent animate-wiggle" />
+            <span className="text-sm font-semibold text-primary uppercase tracking-wider">
+              Trending Now
+            </span>
+          </div>
+          <h2 className="font-display text-3xl md:text-5xl font-bold">
+            Featured <span className="text-gradient-hero">Products</span>
           </h2>
-          <p className="text-muted-foreground">
-            Handpicked items from our premium collection
+          <p className="text-muted-foreground mt-2">
+            Handpicked just for you! 🎯
           </p>
         </div>
-        <Link to="/shop">
-          <Button variant="ghost" className="group">
+        <Link to="/shop" className="animate-slide-up" style={{ animationDelay: "0.1s" }}>
+          <button className="btn-outline-fun flex items-center gap-2">
             View All
-            <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
-          </Button>
+            <ArrowRight className="w-4 h-4" />
+          </button>
         </Link>
       </div>
 
@@ -108,7 +113,7 @@ export const FeaturedProducts = () => {
         {featuredProducts.map((product, index) => (
           <div
             key={product.id}
-            className="animate-fade-in"
+            className="animate-slide-up"
             style={{ animationDelay: `${index * 0.1}s` }}
           >
             <ProductCard {...product} />
