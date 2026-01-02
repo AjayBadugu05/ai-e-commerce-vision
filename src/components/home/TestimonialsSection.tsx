@@ -3,27 +3,30 @@ import { Star, Quote } from "lucide-react";
 const testimonials = [
   {
     id: 1,
-    name: "Sarah Mitchell",
-    role: "Fashion Designer",
+    name: "Priya Sharma",
+    role: "Fashion Lover",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop",
-    content: "The quality of products here is unmatched. I've never been disappointed with any purchase. The AI recommendations are spot-on!",
+    content: "Amazing products and super fast delivery! I'm absolutely in love with everything I bought. Will definitely shop again! 💕",
     rating: 5,
+    emoji: "🛍️",
   },
   {
     id: 2,
-    name: "James Rodriguez",
+    name: "Rahul Verma",
     role: "Tech Enthusiast",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop",
-    content: "Fast shipping, excellent packaging, and premium products. This has become my go-to shopping destination for everything.",
+    content: "Best prices I've found anywhere! The quality is top-notch and customer service is incredibly helpful. Highly recommend! 🚀",
     rating: 5,
+    emoji: "💻",
   },
   {
     id: 3,
-    name: "Emily Chen",
-    role: "Interior Designer",
+    name: "Sneha Patel",
+    role: "Home Decor Expert",
     avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop",
-    content: "The curated collections make it so easy to find unique pieces. Customer service is exceptional. Highly recommend!",
+    content: "The variety is incredible! Found everything I needed for my new apartment. The packaging was beautiful too! ✨",
     rating: 5,
+    emoji: "🏠",
   },
 ];
 
@@ -31,12 +34,13 @@ export const TestimonialsSection = () => {
   return (
     <section className="container mx-auto px-4 py-20">
       {/* Header */}
-      <div className="text-center mb-12">
-        <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">
-          What Our <span className="text-gradient-gold">Customers</span> Say
+      <div className="text-center mb-12 animate-slide-up">
+        <span className="text-4xl mb-2 block">💬</span>
+        <h2 className="font-display text-3xl md:text-5xl font-bold mb-2">
+          Happy <span className="text-gradient-magic">Customers</span>
         </h2>
         <p className="text-muted-foreground">
-          Join thousands of satisfied shoppers worldwide
+          See what people are saying about us!
         </p>
       </div>
 
@@ -45,11 +49,14 @@ export const TestimonialsSection = () => {
         {testimonials.map((testimonial, index) => (
           <div
             key={testimonial.id}
-            className="glass-card p-6 animate-fade-in"
+            className="fun-card p-6 animate-slide-up hover-lift"
             style={{ animationDelay: `${index * 0.1}s` }}
           >
-            {/* Quote Icon */}
-            <Quote className="w-10 h-10 text-primary/30 mb-4" />
+            {/* Emoji & Quote */}
+            <div className="flex justify-between items-start mb-4">
+              <span className="text-4xl">{testimonial.emoji}</span>
+              <Quote className="w-8 h-8 text-primary/20" />
+            </div>
 
             {/* Content */}
             <p className="text-muted-foreground mb-6 leading-relaxed">
@@ -59,7 +66,7 @@ export const TestimonialsSection = () => {
             {/* Rating */}
             <div className="flex gap-1 mb-4">
               {Array.from({ length: testimonial.rating }).map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-primary text-primary" />
+                <Star key={i} className="w-5 h-5 fill-accent text-accent" />
               ))}
             </div>
 
@@ -68,10 +75,10 @@ export const TestimonialsSection = () => {
               <img
                 src={testimonial.avatar}
                 alt={testimonial.name}
-                className="w-12 h-12 rounded-full object-cover ring-2 ring-primary/20"
+                className="w-12 h-12 rounded-2xl object-cover ring-4 ring-primary/20"
               />
               <div>
-                <h4 className="font-medium">{testimonial.name}</h4>
+                <h4 className="font-display font-semibold">{testimonial.name}</h4>
                 <p className="text-sm text-muted-foreground">{testimonial.role}</p>
               </div>
             </div>

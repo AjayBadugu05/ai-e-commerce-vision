@@ -5,7 +5,7 @@ import { ProductCard } from "@/components/products/ProductCard";
 import { AIAssistant } from "@/components/ai/AIAssistant";
 import { CartDrawer } from "@/components/cart/CartDrawer";
 import { Button } from "@/components/ui/button";
-import { Filter, SlidersHorizontal, Grid3X3, LayoutGrid, X } from "lucide-react";
+import { Filter, Grid3X3, LayoutGrid, X, Sparkles } from "lucide-react";
 
 const allProducts = [
   {
@@ -155,21 +155,27 @@ const Shop = () => {
       <main className="pt-24 pb-20">
         <div className="container mx-auto px-4">
           {/* Header */}
-          <div className="mb-8">
+          <div className="mb-8 animate-slide-up">
+            <div className="flex items-center gap-2 mb-2">
+              <Sparkles className="w-6 h-6 text-accent animate-wiggle" />
+              <span className="text-sm font-semibold text-primary uppercase tracking-wider">
+                Browse Products
+              </span>
+            </div>
             <h1 className="font-display text-4xl md:text-5xl font-bold mb-2">
-              Shop <span className="text-gradient-gold">All Products</span>
+              Shop <span className="text-gradient-hero">All Products</span>
             </h1>
             <p className="text-muted-foreground">
-              Discover our complete collection of premium products
+              Find exactly what you're looking for! 🎯
             </p>
           </div>
 
           {/* Filters Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-8 p-4 glass rounded-2xl">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-8 p-4 fun-card animate-slide-up" style={{ animationDelay: "0.1s" }}>
             <div className="flex items-center gap-4">
               <Button
                 variant="ghost"
-                className="gap-2"
+                className="gap-2 rounded-xl hover:bg-primary/10"
                 onClick={() => setShowFilters(!showFilters)}
               >
                 <Filter className="w-4 h-4" />
@@ -182,10 +188,10 @@ const Shop = () => {
                   <button
                     key={cat}
                     onClick={() => setSelectedCategory(cat)}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-300 ${
                       selectedCategory === cat
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary hover:bg-secondary/80"
+                        ? "bg-gradient-to-r from-primary to-magic text-white shadow-pop"
+                        : "bg-muted hover:bg-muted/80"
                     }`}
                   >
                     {cat}
@@ -199,28 +205,28 @@ const Shop = () => {
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="h-10 px-4 rounded-xl bg-secondary border border-border focus:border-primary focus:outline-none"
+                className="h-10 px-4 rounded-xl bg-muted border-2 border-transparent focus:border-primary focus:outline-none font-medium"
               >
-                <option value="featured">Featured</option>
+                <option value="featured">Featured ✨</option>
                 <option value="price-low">Price: Low to High</option>
                 <option value="price-high">Price: High to Low</option>
-                <option value="rating">Top Rated</option>
+                <option value="rating">Top Rated ⭐</option>
               </select>
 
               {/* Grid Toggle */}
-              <div className="hidden md:flex items-center gap-1 p-1 bg-secondary rounded-xl">
+              <div className="hidden md:flex items-center gap-1 p-1 bg-muted rounded-xl">
                 <button
                   onClick={() => setGridCols(3)}
-                  className={`p-2 rounded-lg transition-colors ${
-                    gridCols === 3 ? "bg-background" : ""
+                  className={`p-2 rounded-lg transition-all ${
+                    gridCols === 3 ? "bg-card shadow-card" : ""
                   }`}
                 >
                   <Grid3X3 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setGridCols(4)}
-                  className={`p-2 rounded-lg transition-colors ${
-                    gridCols === 4 ? "bg-background" : ""
+                  className={`p-2 rounded-lg transition-all ${
+                    gridCols === 4 ? "bg-card shadow-card" : ""
                   }`}
                 >
                   <LayoutGrid className="w-4 h-4" />
@@ -231,10 +237,10 @@ const Shop = () => {
 
           {/* Mobile Filters */}
           {showFilters && (
-            <div className="md:hidden mb-6 p-4 glass rounded-2xl animate-fade-in">
+            <div className="md:hidden mb-6 p-4 fun-card animate-slide-up">
               <div className="flex items-center justify-between mb-4">
-                <span className="font-medium">Categories</span>
-                <Button variant="ghost" size="icon" onClick={() => setShowFilters(false)}>
+                <span className="font-display font-semibold">Categories</span>
+                <Button variant="ghost" size="icon" className="rounded-xl" onClick={() => setShowFilters(false)}>
                   <X className="w-4 h-4" />
                 </Button>
               </div>
@@ -246,10 +252,10 @@ const Shop = () => {
                       setSelectedCategory(cat);
                       setShowFilters(false);
                     }}
-                    className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                    className={`px-4 py-2 rounded-xl text-sm font-semibold transition-all ${
                       selectedCategory === cat
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-secondary hover:bg-secondary/80"
+                        ? "bg-gradient-to-r from-primary to-magic text-white"
+                        : "bg-muted"
                     }`}
                   >
                     {cat}
@@ -260,8 +266,8 @@ const Shop = () => {
           )}
 
           {/* Results Count */}
-          <p className="text-muted-foreground mb-6">
-            Showing {sortedProducts.length} products
+          <p className="text-muted-foreground mb-6 animate-slide-up" style={{ animationDelay: "0.2s" }}>
+            Showing <span className="font-bold text-foreground">{sortedProducts.length}</span> awesome products 🎉
           </p>
 
           {/* Products Grid */}
@@ -275,8 +281,8 @@ const Shop = () => {
             {sortedProducts.map((product, index) => (
               <div
                 key={product.id}
-                className="animate-fade-in"
-                style={{ animationDelay: `${index * 0.05}s` }}
+                className="animate-slide-up"
+                style={{ animationDelay: `${0.3 + index * 0.05}s` }}
               >
                 <ProductCard {...product} />
               </div>
@@ -284,10 +290,10 @@ const Shop = () => {
           </div>
 
           {/* Load More */}
-          <div className="text-center mt-12">
-            <Button variant="outline" className="btn-glass h-12 px-8">
-              Load More Products
-            </Button>
+          <div className="text-center mt-12 animate-slide-up" style={{ animationDelay: "0.5s" }}>
+            <button className="btn-outline-fun">
+              Load More Products 🚀
+            </button>
           </div>
         </div>
       </main>

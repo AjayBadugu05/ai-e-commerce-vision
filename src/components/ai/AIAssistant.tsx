@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Send, X, Maximize2, Minimize2 } from "lucide-react";
+import { Bot, Send, X, Maximize2, Minimize2, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface Message {
@@ -15,7 +15,7 @@ export const AIAssistant = () => {
     {
       id: "1",
       role: "assistant",
-      content: "Hi! I'm your AI shopping assistant. I can help you find the perfect products, compare items, and answer any questions about our collections. What are you looking for today?",
+      content: "Hey there! 👋 I'm your shopping buddy! I can help you find awesome products, compare prices, and answer any questions. What are you looking for today? 🛍️",
     },
   ]);
   const [input, setInput] = useState("");
@@ -43,13 +43,12 @@ export const AIAssistant = () => {
     setInput("");
     setIsTyping(true);
 
-    // Simulate AI response
     setTimeout(() => {
       const responses = [
-        "I'd recommend checking out our premium headphones collection! They're currently 25% off and have amazing noise-cancellation features.",
-        "Based on your preferences, I think you'd love our new minimalist watch collection. Shall I show you some options?",
-        "Great choice! That product has excellent reviews. Would you like me to add it to your cart or show you similar items?",
-        "I found some amazing deals for you! Our flash sale has items up to 50% off. Want me to filter by a specific category?",
+        "Great choice! 🎯 I found some amazing deals on that! Our wireless headphones are 25% off right now. Want me to show you?",
+        "Ooh, excellent taste! ✨ That's one of our bestsellers! It has 500+ five-star reviews. Should I add it to your cart?",
+        "You're going to love this! 💕 We have that in 5 different colors. Which one catches your eye?",
+        "Smart shopping! 🛒 I can see some flash deals coming up in 2 hours. Want me to notify you when they go live?",
       ];
 
       const assistantMessage: Message = {
@@ -60,7 +59,7 @@ export const AIAssistant = () => {
 
       setMessages((prev) => [...prev, assistantMessage]);
       setIsTyping(false);
-    }, 1500);
+    }, 1200);
   };
 
   return (
@@ -69,51 +68,49 @@ export const AIAssistant = () => {
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-16 h-16 rounded-full bg-gradient-to-br from-primary to-gold-dark shadow-glow flex items-center justify-center z-50 transition-transform hover:scale-110 active:scale-95"
+          className="fixed bottom-6 right-6 w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-magic to-secondary shadow-pop flex items-center justify-center z-50 transition-all hover:scale-110 active:scale-95 animate-bounce-slow"
         >
-          <Sparkles className="w-7 h-7 text-primary-foreground" />
-          {/* Pulse Ring */}
-          <span className="absolute inset-0 rounded-full bg-primary/50 pulse-ring" />
+          <Bot className="w-8 h-8 text-white" />
+          {/* Notification dot */}
+          <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center">
+            <Sparkles className="w-3 h-3 text-foreground" />
+          </span>
         </button>
       )}
 
       {/* Chat Window */}
       {isOpen && (
         <div
-          className={`fixed z-50 glass border border-border/50 rounded-2xl overflow-hidden flex flex-col transition-all duration-300 ${
+          className={`fixed z-50 bg-card rounded-3xl overflow-hidden flex flex-col shadow-hover border-2 border-primary/20 transition-all duration-300 ${
             isExpanded
               ? "inset-4 md:inset-8"
-              : "bottom-6 right-6 w-[calc(100%-3rem)] md:w-96 h-[500px]"
+              : "bottom-6 right-6 w-[calc(100%-3rem)] md:w-[400px] h-[550px]"
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border/50 bg-secondary/50">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary via-magic to-secondary text-white">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-gold-dark flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-primary-foreground" />
+              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center">
+                <Bot className="w-6 h-6" />
               </div>
               <div>
-                <h3 className="font-display font-semibold">AI Assistant</h3>
-                <p className="text-xs text-muted-foreground">Always here to help</p>
+                <h3 className="font-display font-bold text-lg">ShopZap AI</h3>
+                <p className="text-xs opacity-90">Always here to help! ✨</p>
               </div>
             </div>
             <div className="flex items-center gap-1">
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-lg w-8 h-8"
+                className="rounded-xl w-9 h-9 text-white hover:bg-white/20"
                 onClick={() => setIsExpanded(!isExpanded)}
               >
-                {isExpanded ? (
-                  <Minimize2 className="w-4 h-4" />
-                ) : (
-                  <Maximize2 className="w-4 h-4" />
-                )}
+                {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
               </Button>
               <Button
                 variant="ghost"
                 size="icon"
-                className="rounded-lg w-8 h-8"
+                className="rounded-xl w-9 h-9 text-white hover:bg-white/20"
                 onClick={() => setIsOpen(false)}
               >
                 <X className="w-4 h-4" />
@@ -122,19 +119,18 @@ export const AIAssistant = () => {
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4">
-            {messages.map((message) => (
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/30">
+            {messages.map((message, index) => (
               <div
                 key={message.id}
-                className={`flex ${
-                  message.role === "user" ? "justify-end" : "justify-start"
-                }`}
+                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-slide-up`}
+                style={{ animationDelay: `${index * 0.05}s` }}
               >
                 <div
-                  className={`max-w-[80%] px-4 py-3 rounded-2xl ${
+                  className={`max-w-[85%] px-4 py-3 rounded-2xl ${
                     message.role === "user"
-                      ? "bg-primary text-primary-foreground rounded-br-md"
-                      : "bg-secondary rounded-bl-md"
+                      ? "bg-gradient-to-r from-primary to-magic text-white rounded-br-md"
+                      : "bg-card border-2 border-border rounded-bl-md shadow-card"
                   }`}
                 >
                   <p className="text-sm leading-relaxed">{message.content}</p>
@@ -144,11 +140,11 @@ export const AIAssistant = () => {
 
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-secondary px-4 py-3 rounded-2xl rounded-bl-md">
-                  <div className="flex gap-1">
-                    <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" />
-                    <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "0.1s" }} />
-                    <span className="w-2 h-2 rounded-full bg-muted-foreground animate-bounce" style={{ animationDelay: "0.2s" }} />
+                <div className="bg-card border-2 border-border px-4 py-3 rounded-2xl rounded-bl-md shadow-card">
+                  <div className="flex gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-bounce" />
+                    <span className="w-2 h-2 rounded-full bg-magic animate-bounce" style={{ animationDelay: "0.1s" }} />
+                    <span className="w-2 h-2 rounded-full bg-secondary animate-bounce" style={{ animationDelay: "0.2s" }} />
                   </div>
                 </div>
               </div>
@@ -157,22 +153,22 @@ export const AIAssistant = () => {
           </div>
 
           {/* Input */}
-          <div className="p-4 border-t border-border/50">
+          <div className="p-4 border-t-2 border-border bg-card">
             <div className="flex gap-2">
               <input
                 type="text"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Ask me anything..."
-                className="flex-1 h-12 px-4 rounded-xl bg-secondary border border-border focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                placeholder="Ask me anything... 💬"
+                className="flex-1 h-12 px-4 rounded-2xl bg-muted border-2 border-transparent focus:border-primary focus:outline-none transition-all font-medium"
               />
               <Button
                 onClick={handleSend}
-                className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-gold-dark hover:opacity-90"
+                className="w-12 h-12 rounded-2xl bg-gradient-to-r from-primary to-magic hover:opacity-90 transition-opacity"
                 disabled={!input.trim()}
               >
-                <Send className="w-5 h-5" />
+                <Send className="w-5 h-5 text-white" />
               </Button>
             </div>
           </div>
