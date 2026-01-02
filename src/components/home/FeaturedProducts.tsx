@@ -6,8 +6,8 @@ const featuredProducts = [
   {
     id: "1",
     name: "Wireless Noise-Canceling Headphones Pro",
-    price: 299.99,
-    originalPrice: 399.99,
+    price: 24999,
+    originalPrice: 32999,
     image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
     category: "Electronics",
     rating: 5,
@@ -17,7 +17,7 @@ const featuredProducts = [
   {
     id: "2",
     name: "Premium Leather Watch - Rose Gold Edition",
-    price: 459.99,
+    price: 37999,
     image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop",
     category: "Accessories",
     rating: 5,
@@ -26,8 +26,8 @@ const featuredProducts = [
   {
     id: "3",
     name: "Designer Sunglasses - Titanium Frame",
-    price: 189.99,
-    originalPrice: 249.99,
+    price: 15699,
+    originalPrice: 20699,
     image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&h=500&fit=crop",
     category: "Eyewear",
     rating: 4,
@@ -36,7 +36,7 @@ const featuredProducts = [
   {
     id: "4",
     name: "Smart Fitness Tracker - Limited Edition",
-    price: 199.99,
+    price: 16599,
     image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500&h=500&fit=crop",
     category: "Fitness",
     rating: 4,
@@ -45,8 +45,8 @@ const featuredProducts = [
   {
     id: "5",
     name: "Artisan Coffee Maker - Matte Black",
-    price: 349.99,
-    originalPrice: 449.99,
+    price: 28999,
+    originalPrice: 37299,
     image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=500&h=500&fit=crop",
     category: "Home",
     rating: 5,
@@ -55,7 +55,7 @@ const featuredProducts = [
   {
     id: "6",
     name: "Premium Leather Backpack",
-    price: 279.99,
+    price: 23199,
     image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&h=500&fit=crop",
     category: "Bags",
     rating: 5,
@@ -64,8 +64,8 @@ const featuredProducts = [
   {
     id: "7",
     name: "Wireless Mechanical Keyboard",
-    price: 159.99,
-    originalPrice: 199.99,
+    price: 13249,
+    originalPrice: 16599,
     image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&h=500&fit=crop",
     category: "Electronics",
     rating: 4,
@@ -74,7 +74,7 @@ const featuredProducts = [
   {
     id: "8",
     name: "Minimalist Desk Lamp - LED",
-    price: 89.99,
+    price: 7449,
     image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&h=500&fit=crop",
     category: "Home",
     rating: 4,

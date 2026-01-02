@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ShoppingCart, Search, User, Menu, X, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { useCart } from "@/contexts/CartContext";
 
 export const Navbar = () => {
@@ -39,6 +40,8 @@ export const Navbar = () => {
 
           {/* Actions */}
           <div className="flex items-center gap-2">
+            <ThemeToggle />
+
             <Button
               variant="ghost"
               size="icon"
@@ -48,13 +51,15 @@ export const Navbar = () => {
               <Search className="w-5 h-5" />
             </Button>
 
-            <Button
-              variant="ghost"
-              size="icon"
-              className="rounded-2xl hover:bg-magic/10 hover:text-magic transition-all hover-pop"
-            >
-              <User className="w-5 h-5" />
-            </Button>
+            <Link to="/profile">
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-2xl hover:bg-magic/10 hover:text-magic transition-all hover-pop"
+              >
+                <User className="w-5 h-5" />
+              </Button>
+            </Link>
 
             <Button
               variant="ghost"
@@ -105,6 +110,7 @@ export const Navbar = () => {
             <MobileNavLink to="/shop" onClick={() => setIsMenuOpen(false)} active={isActive("/shop")}>Shop</MobileNavLink>
             <MobileNavLink to="/categories" onClick={() => setIsMenuOpen(false)} active={isActive("/categories")}>Categories</MobileNavLink>
             <MobileNavLink to="/deals" onClick={() => setIsMenuOpen(false)} active={isActive("/deals")}>Deals</MobileNavLink>
+            <MobileNavLink to="/profile" onClick={() => setIsMenuOpen(false)} active={isActive("/profile")}>Profile</MobileNavLink>
           </div>
         </div>
       )}

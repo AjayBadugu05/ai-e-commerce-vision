@@ -1,10 +1,17 @@
 import { X, Plus, Minus, Trash2, ShoppingCart, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/contexts/CartContext";
-import { Link } from "react-router-dom";
 
 export const CartDrawer = () => {
   const { items, isCartOpen, setIsCartOpen, cartTotal, updateQuantity, removeItem } = useCart();
+
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    }).format(price);
+  };
 
   if (!isCartOpen) return null;
 
@@ -71,7 +78,7 @@ export const CartDrawer = () => {
                 <div className="flex-1">
                   <h4 className="font-semibold text-sm line-clamp-2">{item.name}</h4>
                   <p className="text-primary font-bold mt-1">
-                    ${item.price.toFixed(2)}
+                    {formatPrice(item.price)}
                   </p>
                   <div className="flex items-center gap-2 mt-2">
                     <Button
@@ -112,14 +119,14 @@ export const CartDrawer = () => {
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground font-medium">Subtotal</span>
               <span className="font-display text-2xl font-bold text-gradient-hero">
-                ${cartTotal.toFixed(2)}
+                {formatPrice(cartTotal)}
               </span>
             </div>
             <button className="w-full btn-bouncy h-14 text-lg">
               Checkout 🚀
             </button>
             <p className="text-center text-xs text-muted-foreground">
-              Free shipping on orders over $50! 📦
+              Free shipping on orders over ₹999! 📦
             </p>
           </div>
         )}
