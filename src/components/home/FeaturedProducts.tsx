@@ -1,0 +1,120 @@
+import { ProductCard } from "@/components/products/ProductCard";
+import { ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+
+const featuredProducts = [
+  {
+    id: "1",
+    name: "Wireless Noise-Canceling Headphones Pro",
+    price: 299.99,
+    originalPrice: 399.99,
+    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&h=500&fit=crop",
+    category: "Electronics",
+    rating: 5,
+    isNew: true,
+    isSale: true,
+  },
+  {
+    id: "2",
+    name: "Premium Leather Watch - Rose Gold Edition",
+    price: 459.99,
+    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&h=500&fit=crop",
+    category: "Accessories",
+    rating: 5,
+    isNew: true,
+  },
+  {
+    id: "3",
+    name: "Designer Sunglasses - Titanium Frame",
+    price: 189.99,
+    originalPrice: 249.99,
+    image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=500&h=500&fit=crop",
+    category: "Eyewear",
+    rating: 4,
+    isSale: true,
+  },
+  {
+    id: "4",
+    name: "Smart Fitness Tracker - Limited Edition",
+    price: 199.99,
+    image: "https://images.unsplash.com/photo-1575311373937-040b8e1fd5b6?w=500&h=500&fit=crop",
+    category: "Fitness",
+    rating: 4,
+    isNew: true,
+  },
+  {
+    id: "5",
+    name: "Artisan Coffee Maker - Matte Black",
+    price: 349.99,
+    originalPrice: 449.99,
+    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=500&h=500&fit=crop",
+    category: "Home",
+    rating: 5,
+    isSale: true,
+  },
+  {
+    id: "6",
+    name: "Premium Leather Backpack",
+    price: 279.99,
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&h=500&fit=crop",
+    category: "Bags",
+    rating: 5,
+    isNew: true,
+  },
+  {
+    id: "7",
+    name: "Wireless Mechanical Keyboard",
+    price: 159.99,
+    originalPrice: 199.99,
+    image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&h=500&fit=crop",
+    category: "Electronics",
+    rating: 4,
+    isSale: true,
+  },
+  {
+    id: "8",
+    name: "Minimalist Desk Lamp - LED",
+    price: 89.99,
+    image: "https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=500&h=500&fit=crop",
+    category: "Home",
+    rating: 4,
+  },
+];
+
+export const FeaturedProducts = () => {
+  return (
+    <section className="container mx-auto px-4 py-20">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-12">
+        <div>
+          <h2 className="font-display text-3xl md:text-4xl font-bold mb-2">
+            Featured <span className="text-gradient-gold">Products</span>
+          </h2>
+          <p className="text-muted-foreground">
+            Handpicked items from our premium collection
+          </p>
+        </div>
+        <Link to="/shop">
+          <Button variant="ghost" className="group">
+            View All
+            <ArrowRight className="w-4 h-4 ml-2 transition-transform group-hover:translate-x-1" />
+          </Button>
+        </Link>
+      </div>
+
+      {/* Products Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {featuredProducts.map((product, index) => (
+          <div
+            key={product.id}
+            className="animate-fade-in"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            <ProductCard {...product} />
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+};
