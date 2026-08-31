@@ -3,7 +3,11 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { AIAssistant } from "@/components/ai/AIAssistant";
 import { CartDrawer } from "@/components/cart/CartDrawer";
-import { Button } from "@/components/ui/button";
+import { useUser, Order } from "@/contexts/UserContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useCart } from "@/contexts/CartContext";
+import { OrderTrackerModal } from "@/components/orders/OrderTrackerModal";
+import { Link } from "react-router-dom";
 import {
   User,
   Package,
@@ -19,61 +23,15 @@ import {
   ShoppingBag,
   Gift,
   Truck,
+  ExternalLink,
+  ShieldCheck
 } from "lucide-react";
 
-const recentOrders = [
-  {
-    id: "ORD-2024001",
-    date: "Jan 1, 2026",
-    status: "Delivered",
-    total: 24999,
-    items: 2,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=100&h=100&fit=crop",
-  },
-  {
-    id: "ORD-2024002",
-    date: "Dec 28, 2025",
-    status: "In Transit",
-    total: 15699,
-    items: 1,
-    image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=100&h=100&fit=crop",
-  },
-  {
-    id: "ORD-2024003",
-    date: "Dec 20, 2025",
-    status: "Delivered",
-    total: 37999,
-    items: 1,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=100&h=100&fit=crop",
-  },
-];
-
-const wishlistItems = [
-  {
-    id: "1",
-    name: "Premium Wireless Earbuds",
-    price: 14999,
-    image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=200&h=200&fit=crop",
-  },
-  {
-    id: "2",
-    name: "Designer Sneakers",
-    price: 23999,
-    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop",
-  },
-];
-
-const menuItems = [
-  { icon: Package, label: "My Orders", count: 12 },
-  { icon: Heart, label: "Wishlist", count: 5 },
-  { icon: MapPin, label: "Addresses", count: 2 },
-  { icon: CreditCard, label: "Payment Methods", count: 3 },
-  { icon: Bell, label: "Notifications", badge: true },
-  { icon: Settings, label: "Settings" },
-];
-
 const Profile = () => {
-  const [activeTab, setActiveTab] = useState("overview");
+  const { user, orders, setActiveOrderTracker, activeOrderTracker, recentlyViewed } = useUser();
+  const { wishlist, toggleWishlist } = useWishlist();
+  const { addItem } = useCart();
+  const [selectedTab, setSelectedTab] = useState<"orders" | "wishlist" | "addresses" | "settings">("orders");
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-IN", {
@@ -83,197 +41,193 @@ const Profile = () => {
     }).format(price);
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "Delivered":
-        return "bg-success/20 text-success";
-      case "In Transit":
-        return "bg-primary/20 text-primary";
-      case "Processing":
-        return "bg-accent/20 text-accent-foreground";
-      default:
-        return "bg-muted text-muted-foreground";
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-primary">
       <Navbar />
 
-      <main className="pt-24 pb-20">
-        <div className="container mx-auto px-4">
-          {/* Profile Header */}
-          <div className="fun-card p-8 mb-8 animate-slide-up">
-            <div className="flex flex-col md:flex-row items-center gap-6">
-              <div className="relative">
-                <div className="w-28 h-28 rounded-3xl bg-gradient-to-br from-primary via-magic to-secondary p-1 animate-pulse-glow">
-                  <div className="w-full h-full rounded-3xl bg-card flex items-center justify-center">
-                    <User className="w-12 h-12 text-muted-foreground" />
+      <main className="pt-28 pb-20">
+        <div className="container mx-auto px-4 space-y-8">
+          {/* Header Dashboard Banner */}
+          <div className="glass-panel p-8">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="flex flex-col md:flex-row items-center gap-6">
+                <img
+                  src={user.avatar}
+                  alt={user.name}
+                  className="w-24 h-24 rounded-3xl object-cover border-2 border-primary shadow-lg"
+                />
+                <div className="text-center md:text-left space-y-1">
+                  <div className="flex items-center justify-center md:justify-start gap-2">
+                    <h1 className="font-display text-2xl md:text-3xl font-bold">{user.name}</h1>
+                    <span className="px-3 py-0.5 rounded-full bg-primary/20 text-primary text-xs font-bold border border-primary/30">
+                      {user.tier}
+                    </span>
                   </div>
-                </div>
-                <div className="absolute -bottom-2 -right-2 w-10 h-10 rounded-xl bg-success flex items-center justify-center">
-                  <Star className="w-5 h-5 text-white fill-white" />
-                </div>
-              </div>
-
-              <div className="text-center md:text-left flex-1">
-                <h1 className="font-display text-3xl font-bold mb-1">Welcome, Shopper! 👋</h1>
-                <p className="text-muted-foreground mb-3">shopper@example.com</p>
-                <div className="flex flex-wrap gap-3 justify-center md:justify-start">
-                  <span className="px-4 py-2 rounded-xl bg-accent/20 text-sm font-semibold">
-                    🏆 Gold Member
-                  </span>
-                  <span className="px-4 py-2 rounded-xl bg-muted text-sm font-semibold">
-                    📦 12 Orders
-                  </span>
-                  <span className="px-4 py-2 rounded-xl bg-muted text-sm font-semibold">
-                    💖 5 Wishlist
-                  </span>
+                  <p className="text-xs text-muted-foreground">{user.email}</p>
+                  <p className="text-[11px] text-emerald-500 font-semibold flex items-center gap-1 justify-center md:justify-start">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Biometric AI Security Active
+                  </p>
                 </div>
               </div>
 
-              <Button variant="outline" className="gap-2 rounded-xl border-2 hover:bg-destructive/10 hover:text-destructive hover:border-destructive">
-                <LogOut className="w-4 h-4" />
-                Sign Out
-              </Button>
+              <div className="flex items-center gap-3">
+                <button className="btn-apple-secondary text-xs">Edit Profile</button>
+                <button className="p-3 rounded-2xl bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 text-xs font-bold transition-all">
+                  <LogOut className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Sidebar */}
-            <div className="lg:col-span-1 space-y-4 animate-slide-up" style={{ animationDelay: "0.1s" }}>
-              <div className="fun-card p-4">
-                <h3 className="font-display font-semibold mb-4 px-2">Menu</h3>
-                <nav className="space-y-1">
-                  {menuItems.map((item) => (
-                    <button
-                      key={item.label}
-                      className="w-full flex items-center justify-between p-3 rounded-xl hover:bg-muted transition-colors group"
-                    >
-                      <div className="flex items-center gap-3">
-                        <item.icon className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                        <span className="font-medium">{item.label}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {item.count !== undefined && (
-                          <span className="text-xs text-muted-foreground">{item.count}</span>
-                        )}
-                        {item.badge && (
-                          <span className="w-2 h-2 rounded-full bg-secondary" />
-                        )}
-                        <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                      </div>
-                    </button>
-                  ))}
-                </nav>
-              </div>
+          <div className="grid lg:grid-cols-12 gap-8">
+            {/* Sidebar Tabs */}
+            <div className="lg:col-span-4 glass-panel p-4 space-y-2">
+              <button
+                onClick={() => setSelectedTab("orders")}
+                className={`w-full flex items-center justify-between p-3.5 rounded-2xl text-xs font-semibold transition-all ${
+                  selectedTab === "orders" ? "bg-primary text-primary-foreground shadow-md" : "hover:bg-muted text-muted-foreground"
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  <Package className="w-4 h-4" /> Order History & Tracking
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-card text-foreground font-bold">{orders.length}</span>
+              </button>
 
-              {/* Promo Card */}
-              <div className="fun-card p-6 bg-gradient-to-br from-magic/20 to-primary/20 border-magic/30">
-                <Gift className="w-10 h-10 text-magic mb-3 animate-bounce-slow" />
-                <h4 className="font-display font-bold mb-2">Refer & Earn! 🎁</h4>
-                <p className="text-sm text-muted-foreground mb-4">
-                  Invite friends and get ₹500 off on your next order!
-                </p>
-                <Button className="w-full btn-bouncy">Share Now</Button>
+              <button
+                onClick={() => setSelectedTab("wishlist")}
+                className={`w-full flex items-center justify-between p-3.5 rounded-2xl text-xs font-semibold transition-all ${
+                  selectedTab === "wishlist" ? "bg-primary text-primary-foreground shadow-md" : "hover:bg-muted text-muted-foreground"
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  <Heart className="w-4 h-4" /> Saved Wishlist
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-card text-foreground font-bold">{wishlist.length}</span>
+              </button>
+
+              <button
+                onClick={() => setSelectedTab("addresses")}
+                className={`w-full flex items-center justify-between p-3.5 rounded-2xl text-xs font-semibold transition-all ${
+                  selectedTab === "addresses" ? "bg-primary text-primary-foreground shadow-md" : "hover:bg-muted text-muted-foreground"
+                }`}
+              >
+                <span className="flex items-center gap-3">
+                  <MapPin className="w-4 h-4" /> Saved Addresses
+                </span>
+                <span className="text-[10px]">2 Saved</span>
+              </button>
+
+              {/* VIP Promo Referral Box */}
+              <div className="p-5 rounded-2xl bg-gradient-to-tr from-primary/10 via-magic/10 to-accent/10 border border-primary/20 space-y-2 pt-6">
+                <div className="flex items-center gap-2 text-primary font-bold text-xs">
+                  <Gift className="w-4 h-4" /> AETHER VIP Referral
+                </div>
+                <p className="text-xs text-muted-foreground">Share code <strong className="text-foreground font-mono">AETHER20</strong> for 20% off luxury orders.</p>
               </div>
             </div>
 
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-8">
-              {/* Stats */}
-              <div className="grid grid-cols-3 gap-4 animate-slide-up" style={{ animationDelay: "0.2s" }}>
-                <div className="fun-card p-6 text-center hover-lift">
-                  <ShoppingBag className="w-8 h-8 mx-auto mb-2 text-primary" />
-                  <p className="font-display text-2xl font-bold">12</p>
-                  <p className="text-sm text-muted-foreground">Total Orders</p>
-                </div>
-                <div className="fun-card p-6 text-center hover-lift">
-                  <Truck className="w-8 h-8 mx-auto mb-2 text-success" />
-                  <p className="font-display text-2xl font-bold">1</p>
-                  <p className="text-sm text-muted-foreground">In Transit</p>
-                </div>
-                <div className="fun-card p-6 text-center hover-lift">
-                  <Heart className="w-8 h-8 mx-auto mb-2 text-secondary" />
-                  <p className="font-display text-2xl font-bold">5</p>
-                  <p className="text-sm text-muted-foreground">Wishlist</p>
-                </div>
-              </div>
-
-              {/* Recent Orders */}
-              <div className="animate-slide-up" style={{ animationDelay: "0.3s" }}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5 text-accent animate-wiggle" />
-                    <h3 className="font-display text-xl font-bold">Recent Orders</h3>
-                  </div>
-                  <Button variant="ghost" className="text-primary gap-1 rounded-xl">
-                    View All <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </div>
-
+            {/* Main Tab Content */}
+            <div className="lg:col-span-8 space-y-6">
+              {/* ORDERS TAB */}
+              {selectedTab === "orders" && (
                 <div className="space-y-4">
-                  {recentOrders.map((order, idx) => (
-                    <div
-                      key={order.id}
-                      className="fun-card p-4 flex items-center gap-4 hover-lift"
-                      style={{ animationDelay: `${0.4 + idx * 0.1}s` }}
-                    >
-                      <img
-                        src={order.image}
-                        alt=""
-                        className="w-16 h-16 rounded-xl object-cover"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center gap-3 mb-1">
-                          <p className="font-semibold">{order.id}</p>
-                          <span className={`px-2 py-1 rounded-lg text-xs font-semibold ${getStatusColor(order.status)}`}>
-                            {order.status}
-                          </span>
+                  <h3 className="font-display text-xl font-bold">Active Orders & History</h3>
+
+                  {orders.length === 0 ? (
+                    <div className="glass-card p-12 text-center text-muted-foreground">
+                      <p className="text-sm">No orders placed yet.</p>
+                    </div>
+                  ) : (
+                    orders.map((order) => (
+                      <div key={order.id} className="glass-card p-6 space-y-4">
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border/40 pb-3 gap-2">
+                          <div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-bold text-sm text-foreground">{order.id}</span>
+                              <span className="px-2.5 py-0.5 rounded-full text-[10px] bg-primary/20 text-primary font-bold">
+                                {order.status}
+                              </span>
+                            </div>
+                            <p className="text-xs text-muted-foreground mt-0.5">Placed on {order.date}</p>
+                          </div>
+
+                          <button
+                            onClick={() => setActiveOrderTracker(order)}
+                            className="btn-apple-glass text-xs py-2 px-4 flex items-center gap-1.5 self-start sm:self-auto"
+                          >
+                            <Truck className="w-4 h-4 text-primary" /> Track Live Air Progress
+                          </button>
                         </div>
-                        <p className="text-sm text-muted-foreground">
-                          {order.date} • {order.items} item{order.items > 1 ? "s" : ""}
-                        </p>
-                      </div>
-                      <p className="font-display font-bold text-lg">{formatPrice(order.total)}</p>
-                    </div>
-                  ))}
-                </div>
-              </div>
 
-              {/* Wishlist Preview */}
-              <div className="animate-slide-up" style={{ animationDelay: "0.5s" }}>
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-2">
-                    <Heart className="w-5 h-5 text-secondary animate-bounce-slow" />
-                    <h3 className="font-display text-xl font-bold">Wishlist</h3>
+                        <div className="space-y-2">
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">Waybill Air Number:</span>
+                            <span className="font-mono">{order.trackingNumber}</span>
+                          </div>
+                          <div className="flex justify-between text-xs">
+                            <span className="text-muted-foreground">Paid Total:</span>
+                            <span className="font-bold text-foreground">{formatPrice(order.totalAmount)}</span>
+                          </div>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              )}
+
+              {/* WISHLIST TAB */}
+              {selectedTab === "wishlist" && (
+                <div className="space-y-4">
+                  <h3 className="font-display text-xl font-bold">Saved Wishlist Items ({wishlist.length})</h3>
+
+                  {wishlist.length === 0 ? (
+                    <div className="glass-card p-12 text-center text-muted-foreground space-y-3">
+                      <Heart className="w-10 h-10 mx-auto text-muted-foreground/50" />
+                      <p className="text-sm">Your wishlist is currently empty.</p>
+                      <Link to="/shop" className="inline-block btn-apple text-xs">
+                        Browse Catalog
+                      </Link>
+                    </div>
+                  ) : (
+                    <div className="grid sm:grid-cols-2 gap-4">
+                      {wishlist.map((item) => (
+                        <div key={item.id} className="glass-card-hover p-4 flex gap-4">
+                          <img src={item.image} alt={item.name} className="w-20 h-20 rounded-2xl object-cover" />
+                          <div className="flex-1 min-w-0 flex flex-col justify-between">
+                            <div>
+                              <h4 className="font-semibold text-xs truncate">{item.name}</h4>
+                              <p className="font-bold text-sm text-primary mt-1">{formatPrice(item.price)}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button onClick={() => addItem(item)} className="btn-apple text-[11px] py-1.5 px-3 flex-1">
+                                Add Bag
+                              </button>
+                              <button onClick={() => toggleWishlist(item)} className="p-2 rounded-xl bg-muted text-rose-500">
+                                <Heart className="w-4 h-4 fill-rose-500" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* ADDRESSES TAB */}
+              {selectedTab === "addresses" && (
+                <div className="space-y-4">
+                  <h3 className="font-display text-xl font-bold">Shipping Destination Addresses</h3>
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div className="glass-card p-5 space-y-2 border-primary/40">
+                      <span className="px-2 py-0.5 rounded-full bg-primary/20 text-primary text-[10px] font-bold">Default Primary</span>
+                      <h4 className="font-bold text-sm">Penthouse Residence</h4>
+                      <p className="text-xs text-muted-foreground">Penthouse 42, Sky View Towers, Cyber City, Mumbai - 400001</p>
+                    </div>
                   </div>
-                  <Button variant="ghost" className="text-primary gap-1 rounded-xl">
-                    View All <ChevronRight className="w-4 h-4" />
-                  </Button>
                 </div>
-
-                <div className="grid sm:grid-cols-2 gap-4">
-                  {wishlistItems.map((item) => (
-                    <div key={item.id} className="fun-card p-4 flex items-center gap-4 hover-lift">
-                      <img
-                        src={item.image}
-                        alt={item.name}
-                        className="w-20 h-20 rounded-xl object-cover"
-                      />
-                      <div className="flex-1">
-                        <p className="font-semibold text-sm line-clamp-2">{item.name}</p>
-                        <p className="font-display font-bold text-primary mt-1">
-                          {formatPrice(item.price)}
-                        </p>
-                      </div>
-                      <Button size="sm" className="rounded-xl">
-                        Add
-                      </Button>
-                    </div>
-                  ))}
-                </div>
-              </div>
+              )}
             </div>
           </div>
         </div>
@@ -282,8 +236,13 @@ const Profile = () => {
       <Footer />
       <AIAssistant />
       <CartDrawer />
+
+      {/* Live Order Tracker Modal */}
+      <OrderTrackerModal order={activeOrderTracker} onClose={() => setActiveOrderTracker(null)} />
     </div>
   );
 };
 
 export default Profile;
+
+

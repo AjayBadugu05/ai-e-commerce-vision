@@ -1,136 +1,63 @@
 import { useState, useRef, useEffect } from "react";
-import { Bot, Send, X, Maximize2, Minimize2, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { supabase } from "@/integrations/supabase/client";
-
-interface Message {
-  id: string;
-  role: "user" | "assistant";
-  content: string;
-}
-
-const CHAT_URL = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/chat`;
+import { Sparkles, Send, X, Maximize2, Minimize2, Bot, ShoppingBag, ArrowRight } from "lucide-react";
+import { AIService, ChatMessage } from "@/services/aiService";
+import { useCart } from "@/contexts/CartContext";
+import { Link } from "react-router-dom";
 
 export const AIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Hey there! 👋 I'm your shopping buddy! I can help you find awesome products, compare prices, and answer any questions. What are you looking for today? 🛍️",
-    },
-  ]);
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
+  const { addItem } = useCart();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const [messages, setMessages] = useState<ChatMessage[]>([
+    {
+      id: "1",
+      sender: "ai",
+      text: "Greetings! 👋 I am your **AETHER AI Concierge**. I can search our catalog, calculate personalized fit & style vectors, and reserve luxury items directly in your cart. How can I assist you today?",
+      timestamp: "Just now"
+    }
+  ]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (isOpen) scrollToBottom();
+  }, [messages, isOpen]);
 
-  const handleSend = async () => {
-    if (!input.trim() || isLoading) return;
+  const handleSend = async (customQuery?: string) => {
+    const query = customQuery || input;
+    if (!query.trim() || isLoading) return;
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input,
+    const userMsg: ChatMessage = {
+      id: `user-${Date.now()}`,
+      sender: "user",
+      text: query,
+      timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
     };
 
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
+    setMessages((prev) => [...prev, userMsg]);
+    if (!customQuery) setInput("");
     setIsLoading(true);
 
-    let assistantContent = "";
-
     try {
-      const response = await fetch(CHAT_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY}`,
-        },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to get response");
-      }
-
-      if (!response.body) {
-        throw new Error("No response body");
-      }
-
-      const reader = response.body.getReader();
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      const updateAssistant = (content: string) => {
-        assistantContent = content;
-        setMessages((prev) => {
-          const last = prev[prev.length - 1];
-          if (last?.role === "assistant" && last.id.startsWith("stream-")) {
-            return prev.map((m, i) =>
-              i === prev.length - 1 ? { ...m, content: assistantContent } : m
-            );
-          }
-          return [
-            ...prev,
-            { id: `stream-${Date.now()}`, role: "assistant", content: assistantContent },
-          ];
-        });
-      };
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-
-        buffer += decoder.decode(value, { stream: true });
-
-        let newlineIndex: number;
-        while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
-          let line = buffer.slice(0, newlineIndex);
-          buffer = buffer.slice(newlineIndex + 1);
-
-          if (line.endsWith("\r")) line = line.slice(0, -1);
-          if (line.startsWith(":") || line.trim() === "") continue;
-          if (!line.startsWith("data: ")) continue;
-
-          const jsonStr = line.slice(6).trim();
-          if (jsonStr === "[DONE]") break;
-
-          try {
-            const parsed = JSON.parse(jsonStr);
-            const content = parsed.choices?.[0]?.delta?.content as string | undefined;
-            if (content) {
-              assistantContent += content;
-              updateAssistant(assistantContent);
-            }
-          } catch {
-            buffer = line + "\n" + buffer;
-            break;
-          }
+      const responseMsg = await AIService.getConciergeResponse(query, messages);
+      setMessages((prev) => [...prev, responseMsg]);
+    } catch {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: `err-${Date.now()}`,
+          sender: "ai",
+          text: "I experienced a temporary neural network drop. Please ask again!",
+          timestamp: "Just now"
         }
-      }
-    } catch (error) {
-      console.error("Chat error:", error);
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "Oops! Something went wrong. Please try again! 😅",
-      };
-      setMessages((prev) => [...prev, errorMessage]);
+      ]);
     } finally {
       setIsLoading(false);
     }
@@ -138,117 +65,148 @@ export const AIAssistant = () => {
 
   return (
     <>
-      {/* Floating Button */}
+      {/* Floating Trigger Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 w-16 h-16 rounded-2xl bg-gradient-to-br from-primary via-magic to-secondary shadow-pop flex items-center justify-center z-50 transition-all hover:scale-110 active:scale-95 animate-bounce-slow"
+          className="fixed bottom-6 right-6 z-50 p-4 rounded-3xl bg-primary text-primary-foreground shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 flex items-center gap-3 border border-white/20 shadow-glow"
         >
-          <Bot className="w-8 h-8 text-white" />
-          {/* Notification dot */}
-          <span className="absolute -top-1 -right-1 w-5 h-5 bg-accent rounded-full flex items-center justify-center animate-wiggle">
-            <Sparkles className="w-3 h-3 text-foreground" />
-          </span>
+          <div className="w-8 h-8 rounded-2xl bg-white/20 flex items-center justify-center animate-pulse">
+            <Sparkles className="w-4 h-4 text-white" />
+          </div>
+          <span className="hidden sm:inline-block font-display font-semibold text-xs tracking-wide">AETHER AI Concierge</span>
         </button>
       )}
 
-      {/* Chat Window */}
+      {/* Floating Chat Container */}
       {isOpen && (
         <div
-          className={`fixed z-50 bg-card rounded-3xl overflow-hidden flex flex-col shadow-hover border-2 border-primary/20 transition-all duration-300 ${
+          className={`fixed z-50 bg-card/95 backdrop-blur-3xl rounded-3xl overflow-hidden flex flex-col shadow-2xl border border-white/20 dark:border-white/10 transition-all duration-300 ${
             isExpanded
-              ? "inset-4 md:inset-8"
-              : "bottom-6 right-6 w-[calc(100%-3rem)] md:w-[400px] h-[550px]"
+              ? "inset-4 md:inset-10"
+              : "bottom-6 right-6 w-[calc(100%-3rem)] md:w-[420px] h-[580px]"
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary via-magic to-secondary text-white">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-primary via-magic to-accent text-white shadow-md">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center animate-pulse-glow">
-                <Bot className="w-6 h-6" />
+              <div className="w-10 h-10 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center">
+                <Bot className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="font-display font-bold text-lg">ShopZap AI</h3>
-                <p className="text-xs opacity-90">Always here to help! ✨</p>
+                <h4 className="font-display font-bold text-base">AETHER AI Concierge</h4>
+                <p className="text-[10px] opacity-90">Real-Time Neural Catalog Assistant</p>
               </div>
             </div>
+
             <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-xl w-9 h-9 text-white hover:bg-white/20"
+              <button
                 onClick={() => setIsExpanded(!isExpanded)}
+                className="p-2 rounded-xl hover:bg-white/20 transition-colors text-white"
               >
                 {isExpanded ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="rounded-xl w-9 h-9 text-white hover:bg-white/20"
+              </button>
+              <button
                 onClick={() => setIsOpen(false)}
+                className="p-2 rounded-xl hover:bg-white/20 transition-colors text-white"
               >
                 <X className="w-4 h-4" />
-              </Button>
+              </button>
             </div>
           </div>
 
-          {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/30">
-            {messages.map((message, index) => (
+          {/* Quick Prompts Bar */}
+          <div className="flex items-center gap-2 p-3 bg-muted/40 overflow-x-auto text-[11px] font-medium border-b border-border/40">
+            <span className="text-primary font-bold whitespace-nowrap">Suggested:</span>
+            {["Tech under ₹20,000", "Titanium Watches", "Running Shoes", "Promo Codes"].map((prompt) => (
+              <button
+                key={prompt}
+                onClick={() => handleSend(prompt)}
+                className="px-3 py-1 rounded-full bg-card hover:bg-primary/20 hover:text-primary border border-border/60 transition-all whitespace-nowrap"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+
+          {/* Messages Feed */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-muted/20">
+            {messages.map((msg) => (
               <div
-                key={message.id}
-                className={`flex ${message.role === "user" ? "justify-end" : "justify-start"} animate-slide-up`}
-                style={{ animationDelay: `${index * 0.05}s` }}
+                key={msg.id}
+                className={`flex ${msg.sender === "user" ? "justify-end" : "justify-start"} animate-slide-up`}
               >
                 <div
-                  className={`max-w-[85%] px-4 py-3 rounded-2xl ${
-                    message.role === "user"
-                      ? "bg-gradient-to-r from-primary to-magic text-white rounded-br-md"
-                      : "bg-card border-2 border-border rounded-bl-md shadow-card"
+                  className={`max-w-[88%] p-4 rounded-2xl text-xs leading-relaxed space-y-3 ${
+                    msg.sender === "user"
+                      ? "bg-primary text-primary-foreground rounded-br-none shadow-md"
+                      : "bg-card border border-border/60 rounded-bl-none shadow-sm text-foreground"
                   }`}
                 >
-                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.content}</p>
+                  <p className="whitespace-pre-wrap">{msg.text}</p>
+
+                  {/* Embedded Recommended Product Cards */}
+                  {msg.recommendedProducts && msg.recommendedProducts.length > 0 && (
+                    <div className="space-y-2 pt-2 border-t border-border/40">
+                      <p className="text-[10px] font-bold text-primary uppercase tracking-wider">Matched Products:</p>
+                      {msg.recommendedProducts.map((p) => (
+                        <div key={p.id} className="flex items-center justify-between p-2.5 rounded-xl bg-muted/60 border border-border/40 gap-3">
+                          <img src={p.image} alt={p.name} className="w-10 h-10 rounded-lg object-cover" />
+                          <div className="flex-1 min-w-0">
+                            <Link to={`/product/${p.id}`} className="font-bold text-[11px] truncate block hover:underline">
+                              {p.name}
+                            </Link>
+                            <span className="text-[10px] font-bold text-primary">₹{p.price.toLocaleString("en-IN")}</span>
+                          </div>
+                          <button
+                            onClick={() => addItem(p)}
+                            className="p-2 bg-primary text-primary-foreground rounded-lg hover:scale-105 transition-transform"
+                            title="Add to Cart"
+                          >
+                            <ShoppingBag className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <span className="block text-[9px] opacity-60 text-right">{msg.timestamp}</span>
                 </div>
               </div>
             ))}
 
-            {isLoading && messages[messages.length - 1]?.role !== "assistant" && (
+            {isLoading && (
               <div className="flex justify-start">
-                <div className="bg-card border-2 border-border px-4 py-3 rounded-2xl rounded-bl-md shadow-card">
-                  <div className="flex gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-primary animate-bounce" />
-                    <span className="w-2 h-2 rounded-full bg-magic animate-bounce" style={{ animationDelay: "0.1s" }} />
-                    <span className="w-2 h-2 rounded-full bg-secondary animate-bounce" style={{ animationDelay: "0.2s" }} />
-                  </div>
+                <div className="p-3 rounded-2xl bg-card border border-border/60 flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                  <span className="text-xs text-muted-foreground font-medium">AETHER Neural Engine thinking...</span>
                 </div>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Input */}
-          <div className="p-4 border-t-2 border-border bg-card">
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                placeholder="Ask me anything... 💬"
-                className="flex-1 h-12 px-4 rounded-2xl bg-muted border-2 border-transparent focus:border-primary focus:outline-none transition-all font-medium"
-                disabled={isLoading}
-              />
-              <Button
-                onClick={handleSend}
-                className="w-12 h-12 rounded-2xl bg-gradient-to-r from-primary to-magic hover:opacity-90 transition-opacity"
-                disabled={!input.trim() || isLoading}
-              >
-                <Send className="w-5 h-5 text-white" />
-              </Button>
-            </div>
+          {/* Input Bar */}
+          <div className="p-3 border-t border-border/60 bg-card flex gap-2">
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === "Enter" && handleSend()}
+              placeholder="Ask AI Concierge anything..."
+              className="flex-1 h-11 px-4 rounded-xl bg-muted/60 border border-transparent focus:border-primary focus:bg-card outline-none text-xs font-medium transition-all"
+            />
+            <button
+              onClick={() => handleSend()}
+              disabled={!input.trim() || isLoading}
+              className="w-11 h-11 rounded-xl bg-primary text-primary-foreground flex items-center justify-center hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
+            >
+              <Send className="w-4 h-4" />
+            </button>
           </div>
         </div>
       )}
     </>
   );
 };
+

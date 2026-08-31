@@ -1,115 +1,59 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { AIAssistant } from "@/components/ai/AIAssistant";
 import { CartDrawer } from "@/components/cart/CartDrawer";
-import { Button } from "@/components/ui/button";
+import { PRODUCTS, Product } from "@/data/products";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
+import { useUser } from "@/contexts/UserContext";
 import { toast } from "sonner";
 import {
   Star,
   Heart,
-  ShoppingCart,
+  ShoppingBag,
   Truck,
   Shield,
   RotateCcw,
-  ChevronLeft,
   ChevronRight,
   Minus,
   Plus,
   Sparkles,
-  ThumbsUp,
-  User,
+  CheckCircle2,
+  XCircle,
+  Check,
+  MessageSquare
 } from "lucide-react";
 
-const allProducts = [
-  {
-    id: "1",
-    name: "Wireless Noise-Canceling Headphones Pro",
-    price: 24999,
-    originalPrice: 32999,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1524678606370-a47ad25cb82a?w=800&h=800&fit=crop",
-    ],
-    category: "Electronics",
-    rating: 5,
-    reviews: 234,
-    description: "Experience premium sound quality with our Wireless Noise-Canceling Headphones Pro. Features 40-hour battery life, premium leather ear cushions, and advanced ANC technology.",
-    features: ["40-hour battery", "Active Noise Cancellation", "Premium leather", "Bluetooth 5.2"],
-    isNew: true,
-    isSale: true,
-  },
-  {
-    id: "2",
-    name: "Premium Leather Watch - Rose Gold Edition",
-    price: 37999,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&h=800&fit=crop",
-      "https://images.unsplash.com/photo-1524592094714-0f0654e20314?w=800&h=800&fit=crop",
-    ],
-    category: "Accessories",
-    rating: 5,
-    reviews: 189,
-    description: "Elegant rose gold watch with genuine leather strap. Swiss movement, sapphire crystal glass, water-resistant up to 50m.",
-    features: ["Swiss movement", "Sapphire crystal", "Water-resistant 50m", "Genuine leather"],
-    isNew: true,
-  },
-  {
-    id: "3",
-    name: "Designer Sunglasses - Titanium Frame",
-    price: 15699,
-    originalPrice: 20699,
-    image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=800&fit=crop",
-    images: [
-      "https://images.unsplash.com/photo-1572635196237-14b3f281503f?w=800&h=800&fit=crop",
-    ],
-    category: "Eyewear",
-    rating: 4,
-    reviews: 156,
-    description: "Lightweight titanium frame sunglasses with polarized lenses. UV400 protection for ultimate eye care.",
-    features: ["Titanium frame", "Polarized lenses", "UV400 protection", "Lightweight"],
-    isSale: true,
-  },
-];
-
-const customerReviews = [
-  { id: 1, name: "Rahul S.", rating: 5, date: "2 days ago", comment: "Absolutely love these! The sound quality is incredible and the noise cancellation is top-notch. Worth every rupee! 🎧", helpful: 24 },
-  { id: 2, name: "Priya M.", rating: 5, date: "1 week ago", comment: "Best purchase I've made this year. Super comfortable for long listening sessions. Highly recommend! ⭐", helpful: 18 },
-  { id: 3, name: "Amit K.", rating: 4, date: "2 weeks ago", comment: "Great product overall. Battery life is amazing. Only wish the case was a bit more compact.", helpful: 12 },
-  { id: 4, name: "Sneha R.", rating: 5, date: "3 weeks ago", comment: "Premium quality! The leather feels luxurious and the sound is crystal clear. Perfect gift! 🎁", helpful: 31 },
-];
-
-const ProductDetail = () => {
+export const ProductDetail = () => {
   const { id } = useParams();
   const { addItem } = useCart();
+  const { toggleWishlist, isInWishlist } = useWishlist();
+  const { addRecentlyViewed } = useUser();
+
+  const product = PRODUCTS.find((p) => p.id === id) || PRODUCTS[0];
+  const isLiked = isInWishlist(product.id);
+
   const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedColor, setSelectedColor] = useState(product.colors[0]?.name);
+  const [selectedSize, setSelectedSize] = useState(product.sizes?.[0]);
   const [quantity, setQuantity] = useState(1);
-  const [isLiked, setIsLiked] = useState(false);
+  const [activeTab, setActiveTab] = useState<"specs" | "reviews" | "fit">("specs");
 
-  const product = allProducts.find((p) => p.id === id) || allProducts[0];
-  const images = product.images || [product.image];
-  const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0;
+  // Review Form State
+  const [newReviewName, setNewReviewName] = useState("");
+  const [newReviewText, setNewReviewText] = useState("");
+  const [userReviews, setUserReviews] = useState([
+    { id: 1, name: "Julian Vance", rating: 5, date: "Yesterday", text: "The engineering precision on this piece is breathtaking. The Grade 5 titanium feel is second to none." },
+    { id: 2, name: "Siddharth R.", rating: 5, date: "3 days ago", text: "AETHER delivered this via air express in under 36 hours. The spatial acoustic clarity is uncompromised." }
+  ]);
 
-  const handleAddToCart = () => {
-    for (let i = 0; i < quantity; i++) {
-      addItem({
-        id: product.id,
-        name: product.name,
-        price: product.price,
-        image: product.image,
-        category: product.category,
-      });
-    }
-    toast.success(`${quantity}x ${product.name} added to cart! 🎉`);
-  };
+  useEffect(() => {
+    addRecentlyViewed(product);
+  }, [product.id]);
 
+  const images = product.images.length > 0 ? product.images : [product.image];
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
@@ -118,54 +62,54 @@ const ProductDetail = () => {
     }).format(price);
   };
 
+  const handleAddToCart = () => {
+    addItem(product, quantity, selectedColor, selectedSize);
+    toast.success(`Added ${quantity}x ${product.name} to your bag! 🚀`);
+  };
+
+  const handleAddReview = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newReviewName || !newReviewText) return;
+    setUserReviews((prev) => [
+      { id: Date.now(), name: newReviewName, rating: 5, date: "Just now", text: newReviewText },
+      ...prev
+    ]);
+    setNewReviewName("");
+    setNewReviewText("");
+    toast.success("Thank you for submitting your verified review! 🌟");
+  };
+
+  const complementaryProducts = PRODUCTS.filter((p) => product.complementaryProductIds?.includes(p.id));
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-primary">
       <Navbar />
 
-      <main className="pt-24 pb-20">
+      <main className="pt-28 pb-20">
         <div className="container mx-auto px-4">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8 animate-slide-down">
+          <nav className="flex items-center gap-2 text-xs text-muted-foreground mb-8">
             <Link to="/" className="hover:text-primary transition-colors">Home</Link>
-            <ChevronRight className="w-4 h-4" />
-            <Link to="/shop" className="hover:text-primary transition-colors">Shop</Link>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-foreground font-medium">{product.name}</span>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <Link to="/shop" className="hover:text-primary transition-colors">Catalog</Link>
+            <ChevronRight className="w-3.5 h-3.5" />
+            <span className="text-foreground font-semibold truncate">{product.name}</span>
           </nav>
 
-          <div className="grid lg:grid-cols-2 gap-12">
-            {/* Image Gallery */}
-            <div className="space-y-4 animate-slide-up">
-              <div className="relative aspect-square rounded-3xl overflow-hidden bg-muted fun-card">
+          <div className="grid lg:grid-cols-12 gap-12">
+            {/* Gallery Column */}
+            <div className="lg:col-span-6 space-y-4">
+              <div className="relative aspect-square rounded-3xl overflow-hidden glass-card group">
                 <img
                   src={images[selectedImage]}
                   alt={product.name}
-                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                  className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
                 />
-                {product.isNew && (
-                  <span className="absolute top-4 left-4 badge-new animate-wiggle">NEW ✨</span>
-                )}
-                {product.isSale && discount > 0 && (
-                  <span className="absolute top-4 right-4 badge-sale animate-bounce-slow">-{discount}% 🔥</span>
-                )}
-                
-                {/* Navigation Arrows */}
-                {images.length > 1 && (
-                  <>
-                    <button
-                      onClick={() => setSelectedImage((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
-                      className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-card/90 backdrop-blur flex items-center justify-center shadow-card hover:scale-110 transition-transform"
-                    >
-                      <ChevronLeft className="w-6 h-6" />
-                    </button>
-                    <button
-                      onClick={() => setSelectedImage((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 rounded-2xl bg-card/90 backdrop-blur flex items-center justify-center shadow-card hover:scale-110 transition-transform"
-                    >
-                      <ChevronRight className="w-6 h-6" />
-                    </button>
-                  </>
-                )}
+
+                <div className="absolute top-4 left-4 bg-black/70 backdrop-blur-md border border-white/20 px-3 py-1 rounded-full text-xs font-bold text-white flex items-center gap-1.5 shadow-lg">
+                  <Sparkles className="w-3.5 h-3.5 text-primary" />
+                  <span>{product.aiMatchScore}% AI Match</span>
+                </div>
               </div>
 
               {/* Thumbnails */}
@@ -175,8 +119,8 @@ const ProductDetail = () => {
                     <button
                       key={idx}
                       onClick={() => setSelectedImage(idx)}
-                      className={`w-20 h-20 rounded-xl overflow-hidden border-3 transition-all hover:scale-105 ${
-                        selectedImage === idx ? "border-primary shadow-pop" : "border-transparent"
+                      className={`w-20 h-20 rounded-2xl overflow-hidden border-2 transition-all ${
+                        selectedImage === idx ? "border-primary shadow-lg scale-105" : "border-border/60 opacity-70 hover:opacity-100"
                       }`}
                     >
                       <img src={img} alt="" className="w-full h-full object-cover" />
@@ -186,167 +130,242 @@ const ProductDetail = () => {
               )}
             </div>
 
-            {/* Product Info */}
-            <div className="space-y-6 animate-slide-up" style={{ animationDelay: "0.1s" }}>
+            {/* Product Details Column */}
+            <div className="lg:col-span-6 space-y-6">
               <div>
-                <p className="text-sm font-semibold text-primary uppercase tracking-wider mb-2">
-                  {product.category}
-                </p>
-                <h1 className="font-display text-3xl md:text-4xl font-bold mb-4">{product.name}</h1>
-                
-                {/* Rating */}
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-5 h-5 ${i < product.rating ? "fill-accent text-accent" : "text-muted"}`}
-                      />
-                    ))}
-                  </div>
-                  <span className="text-sm text-muted-foreground">
-                    {product.rating}.0 ({product.reviews} reviews)
+                <div className="flex items-center justify-between text-xs text-muted-foreground mb-2">
+                  <span className="font-semibold text-primary uppercase tracking-wider">{product.brand}</span>
+                  <span className="flex items-center gap-1 text-amber-500 font-bold">
+                    <Star className="w-4 h-4 fill-amber-500" /> {product.rating} ({product.reviewsCount} verified reviews)
                   </span>
+                </div>
+
+                <h1 className="font-display text-3xl md:text-4xl font-bold tracking-tight mb-2">{product.name}</h1>
+                <p className="text-sm text-muted-foreground leading-relaxed">{product.tagline}</p>
+              </div>
+
+              {/* Price & Stock Meter */}
+              <div className="p-4 rounded-2xl bg-muted/40 border border-border/60 flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <span className="font-display text-3xl font-bold text-foreground">{formatPrice(product.price)}</span>
+                    {product.originalPrice && (
+                      <span className="text-sm text-muted-foreground line-through">{formatPrice(product.originalPrice)}</span>
+                    )}
+                  </div>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">Includes taxes & 2-year AETHER warranty</p>
+                </div>
+
+                <div className="text-right">
+                  <span className="text-xs font-bold text-emerald-500 flex items-center gap-1 justify-end">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" /> {product.stock} Units Left
+                  </span>
+                  <p className="text-[10px] text-muted-foreground">Dispatched in 24 Hours</p>
                 </div>
               </div>
 
-              {/* Price */}
-              <div className="flex items-center gap-4">
-                <span className="font-display text-4xl font-bold text-gradient-hero">
-                  {formatPrice(product.price)}
-                </span>
-                {product.originalPrice && (
-                  <>
-                    <span className="text-xl text-muted-foreground line-through">
-                      {formatPrice(product.originalPrice)}
-                    </span>
-                    <span className="px-3 py-1 rounded-full bg-success/20 text-success font-bold text-sm">
-                      Save {formatPrice(product.originalPrice - product.price)}
-                    </span>
-                  </>
-                )}
-              </div>
+              {/* Color Selector */}
+              {product.colors && product.colors.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-muted-foreground">Select Color Finish: <strong className="text-foreground">{selectedColor}</strong></label>
+                  <div className="flex items-center gap-3">
+                    {product.colors.map((color) => (
+                      <button
+                        key={color.name}
+                        onClick={() => setSelectedColor(color.name)}
+                        className={`w-9 h-9 rounded-full border-2 transition-all flex items-center justify-center ${
+                          selectedColor === color.name ? "border-primary shadow-lg scale-110" : "border-border"
+                        }`}
+                        style={{ backgroundColor: color.hex }}
+                        title={color.name}
+                      >
+                        {selectedColor === color.name && <Check className="w-4 h-4 text-white drop-shadow" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              {/* Description */}
-              <p className="text-muted-foreground leading-relaxed">{product.description}</p>
+              {/* Size Selector */}
+              {product.sizes && product.sizes.length > 0 && (
+                <div className="space-y-2">
+                  <label className="text-xs font-semibold text-muted-foreground">Select Size Option:</label>
+                  <div className="flex flex-wrap gap-2">
+                    {product.sizes.map((size) => (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        className={`px-4 py-2 rounded-xl text-xs font-bold border transition-all ${
+                          selectedSize === size
+                            ? "bg-primary text-primary-foreground border-primary shadow-md"
+                            : "bg-muted/60 border-border/60 hover:border-primary/40 text-foreground"
+                        }`}
+                      >
+                        {size}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-              {/* Features */}
-              <div className="flex flex-wrap gap-2">
-                {product.features?.map((feature, idx) => (
-                  <span
-                    key={idx}
-                    className="px-4 py-2 rounded-xl bg-muted text-sm font-medium"
-                  >
-                    {feature}
-                  </span>
-                ))}
-              </div>
-
-              {/* Quantity & Actions */}
-              <div className="flex flex-col sm:flex-row gap-4">
-                <div className="flex items-center gap-3 p-2 bg-muted rounded-2xl">
+              {/* Quantity & Add to Cart Action Bar */}
+              <div className="flex items-center gap-4 pt-2">
+                <div className="flex items-center gap-2 bg-muted/60 p-2 rounded-2xl border border-border/60">
                   <button
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="w-10 h-10 rounded-xl bg-card flex items-center justify-center hover:bg-primary/10 transition-colors"
+                    className="w-9 h-9 rounded-xl bg-card flex items-center justify-center hover:bg-muted"
                   >
                     <Minus className="w-4 h-4" />
                   </button>
-                  <span className="w-12 text-center font-bold text-lg">{quantity}</span>
+                  <span className="w-8 text-center font-bold text-sm">{quantity}</span>
                   <button
                     onClick={() => setQuantity((q) => q + 1)}
-                    className="w-10 h-10 rounded-xl bg-card flex items-center justify-center hover:bg-primary/10 transition-colors"
+                    className="w-9 h-9 rounded-xl bg-card flex items-center justify-center hover:bg-muted"
                   >
                     <Plus className="w-4 h-4" />
                   </button>
                 </div>
 
-                <Button
-                  onClick={handleAddToCart}
-                  className="flex-1 btn-bouncy h-14 text-lg gap-2"
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  Add to Cart
-                </Button>
+                <button onClick={handleAddToCart} className="flex-1 btn-apple py-4 text-sm flex items-center justify-center gap-2">
+                  <ShoppingBag className="w-4 h-4" /> Add to Shopping Bag
+                </button>
 
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setIsLiked(!isLiked);
-                    toast.success(isLiked ? "Removed from wishlist" : "Added to wishlist! 💖");
-                  }}
-                  className={`w-14 h-14 rounded-2xl border-2 ${
-                    isLiked ? "border-secondary bg-secondary/10 text-secondary" : "border-border"
+                <button
+                  onClick={() => toggleWishlist(product)}
+                  className={`p-4 rounded-2xl border transition-all ${
+                    isLiked ? "bg-rose-500 text-white border-rose-400" : "bg-card border-border hover:border-primary/40"
                   }`}
                 >
-                  <Heart className={`w-6 h-6 ${isLiked ? "fill-secondary" : ""}`} />
-                </Button>
+                  <Heart className={`w-5 h-5 ${isLiked ? "fill-white" : ""}`} />
+                </button>
               </div>
 
-              {/* Trust Badges */}
-              <div className="grid grid-cols-3 gap-4 pt-6 border-t border-border">
-                <div className="text-center p-4 rounded-2xl bg-muted/50 hover-lift">
-                  <Truck className="w-8 h-8 mx-auto mb-2 text-primary" />
-                  <p className="text-sm font-semibold">Free Delivery</p>
-                  <p className="text-xs text-muted-foreground">Orders over ₹999</p>
-                </div>
-                <div className="text-center p-4 rounded-2xl bg-muted/50 hover-lift">
-                  <Shield className="w-8 h-8 mx-auto mb-2 text-success" />
-                  <p className="text-sm font-semibold">2 Year Warranty</p>
-                  <p className="text-xs text-muted-foreground">Full coverage</p>
-                </div>
-                <div className="text-center p-4 rounded-2xl bg-muted/50 hover-lift">
-                  <RotateCcw className="w-8 h-8 mx-auto mb-2 text-magic" />
-                  <p className="text-sm font-semibold">Easy Returns</p>
-                  <p className="text-xs text-muted-foreground">30-day policy</p>
+              {/* AI Synthesized Pros & Cons */}
+              <div className="glass-panel p-5 space-y-3">
+                <h4 className="font-semibold text-xs text-primary flex items-center gap-1.5 uppercase tracking-wider">
+                  <Sparkles className="w-4 h-4" /> AETHER AI Review Synthesis
+                </h4>
+
+                <div className="grid sm:grid-cols-2 gap-4 text-xs">
+                  <div className="space-y-1.5">
+                    <p className="font-bold text-emerald-500 flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" /> Key Highlights:
+                    </p>
+                    <ul className="space-y-1 text-muted-foreground">
+                      {product.pros.map((p, i) => (
+                        <li key={i}>• {p}</li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <p className="font-bold text-amber-500 flex items-center gap-1">
+                      <XCircle className="w-3.5 h-3.5" /> Considerations:
+                    </p>
+                    <ul className="space-y-1 text-muted-foreground">
+                      {product.cons.map((c, i) => (
+                        <li key={i}>• {c}</li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Reviews Section */}
-          <section className="mt-20">
-            <div className="flex items-center gap-3 mb-8">
-              <Sparkles className="w-6 h-6 text-accent animate-wiggle" />
-              <h2 className="font-display text-3xl font-bold">
-                Customer <span className="text-gradient-hero">Reviews</span>
-              </h2>
+          {/* Tabbed Specs & Reviews */}
+          <div className="mt-16 glass-panel p-6 md:p-8 space-y-6">
+            <div className="flex items-center gap-4 border-b border-border/60 pb-4 text-sm font-semibold">
+              <button
+                onClick={() => setActiveTab("specs")}
+                className={`pb-2 border-b-2 transition-all ${activeTab === "specs" ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`}
+              >
+                Technical Specifications
+              </button>
+              <button
+                onClick={() => setActiveTab("reviews")}
+                className={`pb-2 border-b-2 transition-all ${activeTab === "reviews" ? "border-primary text-primary" : "border-transparent text-muted-foreground"}`}
+              >
+                Collector Reviews ({userReviews.length})
+              </button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              {customerReviews.map((review, idx) => (
-                <div
-                  key={review.id}
-                  className="fun-card p-6 animate-slide-up"
-                  style={{ animationDelay: `${idx * 0.1}s` }}
-                >
-                  <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-primary to-magic flex items-center justify-center text-white font-bold">
-                      <User className="w-6 h-6" />
+            {activeTab === "specs" && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                {Object.entries(product.specs).map(([key, val]) => (
+                  <div key={key} className="p-4 rounded-2xl bg-muted/40 border border-border/40">
+                    <span className="text-muted-foreground block mb-1">{key}</span>
+                    <strong className="text-foreground text-sm">{val}</strong>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {activeTab === "reviews" && (
+              <div className="space-y-6">
+                {/* Submit Form */}
+                <form onSubmit={handleAddReview} className="p-4 rounded-2xl bg-muted/40 border border-border/40 space-y-3">
+                  <h5 className="font-semibold text-xs flex items-center gap-1.5">
+                    <MessageSquare className="w-4 h-4 text-primary" /> Write a Verified Collector Review
+                  </h5>
+                  <div className="grid sm:grid-cols-2 gap-3">
+                    <input
+                      type="text"
+                      placeholder="Your Name"
+                      value={newReviewName}
+                      onChange={(e) => setNewReviewName(e.target.value)}
+                      className="h-10 px-3 rounded-xl bg-card border border-border/60 text-xs outline-none"
+                      required
+                    />
+                  </div>
+                  <textarea
+                    placeholder="Share your experience regarding craft, sound, or precision..."
+                    value={newReviewText}
+                    onChange={(e) => setNewReviewText(e.target.value)}
+                    className="w-full p-3 rounded-xl bg-card border border-border/60 text-xs outline-none h-20"
+                    required
+                  />
+                  <button type="submit" className="btn-apple text-xs py-2 px-4">
+                    Submit Review
+                  </button>
+                </form>
+
+                {/* Reviews List */}
+                <div className="space-y-3">
+                  {userReviews.map((r) => (
+                    <div key={r.id} className="p-4 rounded-2xl bg-card border border-border/40 space-y-2">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-bold text-foreground">{r.name}</span>
+                        <span className="text-muted-foreground text-[10px]">{r.date}</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground">{r.text}</p>
                     </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Complementary Products ("Complete the Look") */}
+          {complementaryProducts.length > 0 && (
+            <div className="mt-16 space-y-6">
+              <h3 className="font-display text-2xl font-bold">Complete The Look</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {complementaryProducts.map((p) => (
+                  <div key={p.id} className="glass-card-hover p-4 flex items-center gap-4">
+                    <img src={p.image} alt={p.name} className="w-20 h-20 rounded-2xl object-cover" />
                     <div className="flex-1">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-semibold">{review.name}</h4>
-                        <span className="text-xs text-muted-foreground">{review.date}</span>
-                      </div>
-                      <div className="flex items-center gap-1 mb-3">
-                        {Array.from({ length: 5 }).map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-4 h-4 ${i < review.rating ? "fill-accent text-accent" : "text-muted"}`}
-                          />
-                        ))}
-                      </div>
-                      <p className="text-muted-foreground text-sm mb-3">{review.comment}</p>
-                      <button className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors">
-                        <ThumbsUp className="w-4 h-4" />
-                        Helpful ({review.helpful})
-                      </button>
+                      <h4 className="font-semibold text-xs line-clamp-1">{p.name}</h4>
+                      <p className="font-bold text-sm text-primary mt-1">₹{p.price.toLocaleString("en-IN")}</p>
+                      <Link to={`/product/${p.id}`} className="text-[11px] text-muted-foreground hover:text-primary underline mt-1 block">
+                        View Item
+                      </Link>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </section>
+          )}
         </div>
       </main>
 
@@ -358,3 +377,5 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+
+

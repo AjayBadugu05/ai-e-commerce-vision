@@ -14,8 +14,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Nunito', 'sans-serif'],
-        display: ['Fredoka', 'sans-serif'],
+        sans: ['Inter', 'sans-serif'],
+        display: ['Plus Jakarta Sans', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -59,28 +59,18 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
-        sidebar: {
-          DEFAULT: "hsl(var(--sidebar-background))",
-          foreground: "hsl(var(--sidebar-foreground))",
-          primary: "hsl(var(--sidebar-primary))",
-          "primary-foreground": "hsl(var(--sidebar-primary-foreground))",
-          accent: "hsl(var(--sidebar-accent))",
-          "accent-foreground": "hsl(var(--sidebar-accent-foreground))",
-          border: "hsl(var(--sidebar-border))",
-          ring: "hsl(var(--sidebar-ring))",
-        },
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
-        xl: "1.25rem",
+        xl: "1rem",
         "2xl": "1.5rem",
-        "3xl": "2rem",
+        "3xl": "2.25rem",
         "4xl": "3rem",
       },
       borderWidth: {
-        '3': '3px',
+        '1.5': '1.5px',
       },
       keyframes: {
         "accordion-down": {
@@ -91,25 +81,19 @@ export default {
           from: { height: "var(--radix-accordion-content-height)" },
           to: { height: "0" },
         },
-        "bounce-slow": {
-          "0%, 100%": { transform: "translateY(0)" },
-          "50%": { transform: "translateY(-15px)" },
-        },
-        wiggle: {
-          "0%, 100%": { transform: "rotate(-3deg)" },
-          "50%": { transform: "rotate(3deg)" },
-        },
         float: {
-          "0%, 100%": { transform: "translateY(0) rotate(0deg)" },
-          "50%": { transform: "translateY(-20px) rotate(3deg)" },
+          "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
+          "50%": { transform: "translateY(-12px) rotate(1deg)" },
         },
-        "pop-in": {
-          "0%": { opacity: "0", transform: "scale(0.5)" },
-          "70%": { transform: "scale(1.1)" },
-          "100%": { opacity: "1", transform: "scale(1)" },
+        "pulse-glow": {
+          "0%, 100%": { opacity: "0.6", transform: "scale(1)" },
+          "50%": { opacity: "1", transform: "scale(1.05)" },
+        },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
         },
         "slide-up": {
-          "0%": { opacity: "0", transform: "translateY(30px)" },
+          "0%": { opacity: "0", transform: "translateY(20px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
         "slide-in-right": {
@@ -120,19 +104,21 @@ export default {
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
-        "bounce-slow": "bounce-slow 3s ease-in-out infinite",
-        wiggle: "wiggle 1s ease-in-out infinite",
-        float: "float 4s ease-in-out infinite",
-        "pop-in": "pop-in 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards",
-        "slide-up": "slide-up 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards",
-        "slide-in-right": "slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        float: "float 6s ease-in-out infinite",
+        "pulse-glow": "pulse-glow 4s ease-in-out infinite",
+        shimmer: "shimmer 2.5s infinite",
+        "slide-up": "slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards",
+        "slide-in-right": "slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
       boxShadow: {
-        pop: "0 10px 40px -10px hsl(205 100% 50% / 0.3)",
-        card: "0 4px 20px hsl(220 40% 13% / 0.08)",
-        hover: "0 20px 40px hsl(220 40% 13% / 0.15)",
+        glass: "0 8px 32px 0 rgba(0, 0, 0, 0.08)",
+        "glass-lg": "0 20px 50px 0 rgba(0, 0, 0, 0.12)",
+        glow: "0 0 40px -10px rgba(59, 130, 246, 0.3)",
+        card: "0 10px 30px -5px rgba(0, 0, 0, 0.05)",
+        hover: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
       },
     },
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
+
