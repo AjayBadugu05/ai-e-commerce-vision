@@ -14,9 +14,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['DM Sans', 'Plus Jakarta Sans', 'sans-serif'],
-        display: ['Playfair Display', 'Cinzel', 'serif'],
-        serif: ['Playfair Display', 'Cinzel', 'serif'],
+        sans: ['Plus Jakarta Sans', 'system-ui', 'sans-serif'],
+        display: ['Syne', 'Cormorant Garamond', 'serif'],
+        serif: ['Cormorant Garamond', 'Syne', 'serif'],
+        tech: ['Space Grotesk', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace'],
       },
       colors: {
         border: "hsl(var(--border))",
