@@ -16,6 +16,16 @@ describe('AIService', () => {
     expect(res.text).toContain('AETHER20');
   });
 
+  it('matches chronograph watches for watch query', async () => {
+    const res = await AIService.getConciergeResponse('show me titanium automatic watches', []);
+    expect(res.text).toContain('Monolith Titanium Automatic');
+  });
+
+  it('filters budget items under 20000', async () => {
+    const res = await AIService.getConciergeResponse('show cheap items under 20000', []);
+    expect(res.recommendedProducts?.every((p) => p.price <= 20000)).toBe(true);
+  });
+
   it('performs visual image search matching keywords', () => {
     const results = AIService.searchByImage('black headphone audio');
     expect(results.length).toBeGreaterThan(0);

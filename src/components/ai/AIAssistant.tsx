@@ -1,8 +1,9 @@
 import { useState, useRef, useEffect } from "react";
-import { Sparkles, Send, X, Maximize2, Minimize2, Bot, ShoppingBag, Volume2 } from "lucide-react";
+import { Sparkles, Send, X, Maximize2, Minimize2, Bot, ShoppingBag } from "lucide-react";
 import { AIService, ChatMessage } from "@/services/aiService";
 import { useCart } from "@/contexts/CartContext";
 import { Link } from "react-router-dom";
+import ErrorBoundary from "@/components/ui/ErrorBoundary";
 
 export const AIAssistant = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -64,16 +65,16 @@ export const AIAssistant = () => {
   };
 
   return (
-    <>
+    <ErrorBoundary>
       {/* Floating Neumorphic Launcher Button */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-50 p-4 rounded-3xl neu-flat text-foreground hover:-translate-y-1 transition-all duration-300 flex items-center gap-3 group"
+          className="fixed bottom-6 right-6 z-50 p-3.5 rounded-2xl neu-flat text-foreground hover:-translate-y-1 transition-all duration-300 flex items-center gap-2.5 shadow-neu-flat hover:shadow-neu-flat-lg group"
           title="Open AI Concierge"
         >
-          <div className="w-9 h-9 rounded-2xl neu-pressed flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
-            <Sparkles className="w-5 h-5 text-primary animate-pulse" />
+          <div className="w-8 h-8 rounded-xl neu-pressed flex items-center justify-center text-primary group-hover:scale-105 transition-transform">
+            <Sparkles className="w-4 h-4 text-primary animate-pulse" />
           </div>
           <span className="hidden sm:inline-block font-display font-extrabold text-xs tracking-wide text-foreground">
             AETHERIA AI Assistant
@@ -212,6 +213,6 @@ export const AIAssistant = () => {
           </div>
         </div>
       )}
-    </>
+    </ErrorBoundary>
   );
 };

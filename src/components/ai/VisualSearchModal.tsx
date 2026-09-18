@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { UploadCloud, Camera, Sparkles, X, CheckCircle2 } from "lucide-react";
+import { useState, useRef } from "react";
+import { UploadCloud, Camera, Sparkles, X, CheckCircle2, Image as ImageIcon } from "lucide-react";
 import { AIService } from "@/services/aiService";
 import { Product } from "@/data/products";
 import { useNavigate } from "react-router-dom";
@@ -18,19 +18,66 @@ const SAMPLE_PHOTOS = [
 export const VisualSearchModal = ({ isOpen, onClose }: VisualSearchModalProps) => {
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [matchedResults, setMatchedResults] = useState<Product[]>([]);
+  
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const navigate = useNavigate();
 
   if (!isOpen) return null;
 
-  const handleSelectSample = (sampleName: string, imgUrl: string) => {
+  const runNeuralScan = (sampleName: string, imgUrl: string) => {
     setSelectedPhoto(imgUrl);
     setIsAnalyzing(true);
+    setMatchedResults([]);
     setTimeout(() => {
       const matches = AIService.searchByImage(sampleName);
       setMatchedResults(matches);
       setIsAnalyzing(false);
-    }, 1100);
+    }, 900);
+  };
+
+  const handleSelectSample = (sampleName: string, imgUrl: string) => {
+    runNeuralScan(sampleName, imgUrl);
+  };
+
+  const processFile = (file: File) => {
+    if (!file.type.startsWith("image/")) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const resultUrl = e.target?.result as string;
+      runNeuralScan(file.name, resultUrl);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleDropzoneClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) processFile(file);
+  };
+
+  const handleDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+  };
+
+  const handleDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragging(false);
+    const file = e.dataTransfer.files?.[0];
+    if (file) processFile(file);
   };
 
   const handleProductClick = (id: string) => {
@@ -43,6 +90,15 @@ export const VisualSearchModal = ({ isOpen, onClose }: VisualSearchModalProps) =
       <div className="fixed inset-0 -z-10" onClick={onClose} />
 
       <div className="w-full max-w-xl neu-flat-lg rounded-4xl p-6 sm:p-8 space-y-6">
+        {/* Hidden File Input */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileChange}
+          accept="image/png, image/jpeg, image/webp"
+          className="hidden"
+        />
+
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-border/40">
           <div className="flex items-center gap-3">
@@ -59,16 +115,37 @@ export const VisualSearchModal = ({ isOpen, onClose }: VisualSearchModalProps) =
           </button>
         </div>
 
-        {/* Recessed Drag & Drop Dropzone */}
-        <div className="neu-pressed rounded-3xl p-8 text-center cursor-pointer relative overflow-hidden group">
+        {/* Interactive Drag & Drop Area */}
+        <div
+          onClick={handleDropzoneClick}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`neu-pressed rounded-3xl p-6 text-center cursor-pointer relative overflow-hidden transition-all group ${
+            isDragging ? "border-2 border-primary bg-primary/5" : ""
+          }`}
+        >
           {/* Laser Scanner animation effect */}
           {isAnalyzing && (
             <div className="absolute left-0 right-0 h-1 bg-primary shadow-neu-glow animate-laser-scan z-20" />
           )}
 
-          <UploadCloud className="w-10 h-10 mx-auto text-primary mb-3 group-hover:scale-110 transition-transform" />
-          <h4 className="font-extrabold text-sm text-foreground mb-1">Drag & Drop Image or Click to Scan</h4>
-          <p className="text-xs text-muted-foreground font-medium">Supports PNG, JPG, WebP (Processed 100% locally)</p>
+          {selectedPhoto ? (
+            <div className="flex items-center justify-center gap-4">
+              <img src={selectedPhoto} alt="Uploaded vector" className="w-16 h-16 rounded-2xl object-cover neu-flat" />
+              <div className="text-left">
+                <span className="neu-badge text-[10px] text-primary font-black uppercase mb-1">Vector Input Active</span>
+                <p className="text-xs text-foreground font-bold">Image loaded for neural indexing</p>
+                <span className="text-[10px] text-muted-foreground">Click to upload another photo</span>
+              </div>
+            </div>
+          ) : (
+            <>
+              <UploadCloud className="w-10 h-10 mx-auto text-primary mb-2 group-hover:scale-110 transition-transform" />
+              <h4 className="font-extrabold text-sm text-foreground mb-1">Drag & Drop Image or Click to Scan</h4>
+              <p className="text-xs text-muted-foreground font-medium">Supports PNG, JPG, WebP (Processed 100% locally)</p>
+            </>
+          )}
         </div>
 
         {/* Sample Photos selection */}
@@ -82,7 +159,7 @@ export const VisualSearchModal = ({ isOpen, onClose }: VisualSearchModalProps) =
                 key={sample.name}
                 onClick={() => handleSelectSample(sample.name, sample.img)}
                 className={`relative rounded-2xl overflow-hidden p-1 transition-all ${
-                  selectedPhoto === sample.img ? "neu-pressed" : "neu-flat hover:scale-[1.03]"
+                  selectedPhoto === sample.img ? "neu-pressed ring-2 ring-primary" : "neu-flat hover:scale-[1.03]"
                 }`}
               >
                 <div className="aspect-square rounded-xl overflow-hidden relative">
@@ -98,9 +175,9 @@ export const VisualSearchModal = ({ isOpen, onClose }: VisualSearchModalProps) =
 
         {/* Analyzing Status Indicator */}
         {isAnalyzing && (
-          <div className="py-6 text-center space-y-2">
-            <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs font-extrabold text-primary">Scanning neural visual descriptors...</p>
+          <div className="py-4 text-center space-y-2">
+            <div className="w-7 h-7 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
+            <p className="text-xs font-extrabold text-primary animate-pulse">Extracting visual features & matching vectors...</p>
           </div>
         )}
 
@@ -110,7 +187,7 @@ export const VisualSearchModal = ({ isOpen, onClose }: VisualSearchModalProps) =
             <p className="text-xs font-black text-emerald-500 flex items-center gap-1.5 uppercase tracking-wider">
               <CheckCircle2 className="w-4 h-4" /> Neural Match Results:
             </p>
-            <div className="space-y-2.5 max-h-48 overflow-y-auto">
+            <div className="space-y-2.5 max-h-48 overflow-y-auto pr-1">
               {matchedResults.map((product) => (
                 <div
                   key={product.id}
