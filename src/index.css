@@ -6,74 +6,74 @@
 
 @layer base {
   :root {
-    /* Warm Champagne Porcelain & Burnt Terracotta (Light Palette) */
-    --background: 40 25% 94%; /* #f4f1ea */
-    --foreground: 24 10% 10%; /* #1c1917 */
+    /* High Contrast Warm Champagne Porcelain & Burnt Terracotta (Light Palette) */
+    --background: 40 20% 95%; /* #f5f2eb */
+    --foreground: 24 25% 10%; /* #201712 - Ultra Crisp Dark Text */
 
-    --card: 40 25% 95%; /* #f7f4ed */
-    --card-foreground: 24 10% 10%;
+    --card: 40 20% 96%;
+    --card-foreground: 24 25% 10%;
 
-    --popover: 40 25% 95%;
-    --popover-foreground: 24 10% 10%;
+    --popover: 40 20% 96%;
+    --popover-foreground: 24 25% 10%;
 
-    --primary: 16 65% 42%; /* Burnt Terracotta #b34a26 */
+    --primary: 16 82% 38%; /* Rich Vibrant Terracotta #b13d17 */
     --primary-foreground: 40 25% 98%;
 
     --secondary: 35 15% 88%;
-    --secondary-foreground: 24 10% 15%;
+    --secondary-foreground: 24 25% 10%;
 
-    --muted: 35 15% 86%;
-    --muted-foreground: 24 6% 45%;
+    --muted: 35 15% 85%;
+    --muted-foreground: 24 16% 28%; /* High contrast legible dark slate/brown text */
 
-    --accent: 262 65% 52%;
+    --accent: 262 70% 45%;
     --accent-foreground: 0 0% 100%;
 
     --success: 142 71% 35%;
     --success-foreground: 0 0% 100%;
 
-    --border: 35 15% 82%;
-    --input: 35 15% 88%;
-    --ring: 16 65% 42%;
+    --border: 35 15% 78%;
+    --input: 35 15% 86%;
+    --ring: 16 82% 38%;
 
     --radius: 1.5rem;
 
     /* Light Theme Neumorphic Shadows */
-    --neu-bg: #f4f1ea;
+    --neu-bg: #f5f2eb;
     --neu-light-shadow: #ffffff;
-    --neu-dark-shadow: #cfc8bb;
-    --neu-accent-glow: rgba(179, 74, 38, 0.25);
+    --neu-dark-shadow: #d4cdc1;
+    --neu-accent-glow: rgba(177, 61, 23, 0.25);
 
-    --shadow-neu-flat: 10px 10px 22px #cfc8bb, -10px -10px 22px #ffffff;
-    --shadow-neu-flat-sm: 5px 5px 12px #cfc8bb, -5px -5px 12px #ffffff;
-    --shadow-neu-flat-lg: 16px 16px 34px #cfc8bb, -16px -16px 34px #ffffff;
-    --shadow-neu-pressed: inset 6px 6px 12px #cfc8bb, inset -6px -6px 12px #ffffff;
-    --shadow-neu-pressed-sm: inset 3px 3px 7px #cfc8bb, inset -3px -3px 7px #ffffff;
-    --shadow-neu-convex: linear-gradient(145deg, #ffffff, #ded7c9);
+    --shadow-neu-flat: 10px 10px 22px #d4cdc1, -10px -10px 22px #ffffff;
+    --shadow-neu-flat-sm: 5px 5px 12px #d4cdc1, -5px -5px 12px #ffffff;
+    --shadow-neu-flat-lg: 16px 16px 34px #d4cdc1, -16px -16px 34px #ffffff;
+    --shadow-neu-pressed: inset 6px 6px 12px #d4cdc1, inset -6px -6px 12px #ffffff;
+    --shadow-neu-pressed-sm: inset 3px 3px 7px #d4cdc1, inset -3px -3px 7px #ffffff;
+    --shadow-neu-convex: linear-gradient(145deg, #ffffff, #e3dccf);
 
-    --gradient-hero: linear-gradient(135deg, #b34a26 0%, #d97745 50%, #7c3aed 100%);
+    --gradient-hero: linear-gradient(135deg, #b13d17 0%, #c85a28 50%, #6d28d9 100%);
   }
 
   .dark {
-    /* Subtle Elegance & Royal Velvet (#020403 / #141413 / #1A2324 - Image 2 Palette) */
+    /* Deep Jet Charcoal & Specular Rims (Dark Palette) */
     --background: 222 17% 8%; /* #111318 */
     --foreground: 210 40% 98%; /* #f8fafc */
 
-    --card: 222 17% 11%; /* #181b22 */
+    --card: 222 17% 11%;
     --card-foreground: 210 40% 98%;
 
     --popover: 222 17% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 20 68% 56%; /* Burnt Sienna Terracotta #d97745 */
+    --primary: 20 75% 58%; /* Bright Terracotta #e27d49 */
     --primary-foreground: 222 17% 8%;
 
     --secondary: 222 15% 18%;
     --secondary-foreground: 210 40% 98%;
 
     --muted: 222 15% 18%;
-    --muted-foreground: 215 20% 65%;
+    --muted-foreground: 215 25% 72%; /* Crisp bright silver/grey text */
 
-    --accent: 263 70% 64%; /* Royal Velvet Violet #8b5cf6 */
+    --accent: 263 75% 68%;
     --accent-foreground: 210 40% 98%;
 
     --success: 142 71% 45%;
@@ -81,13 +81,13 @@
 
     --border: 222 15% 20%;
     --input: 222 15% 16%;
-    --ring: 20 68% 56%;
+    --ring: 20 75% 58%;
 
-    /* Dark Theme Neumorphic Contrast Shadows */
+    /* Dark Theme Neumorphic Shadows */
     --neu-bg: #111318;
     --neu-light-shadow: #252a36;
     --neu-dark-shadow: #08090d;
-    --neu-accent-glow: rgba(217, 119, 69, 0.4);
+    --neu-accent-glow: rgba(226, 125, 73, 0.4);
 
     --shadow-neu-flat: 10px 10px 22px #08090d, -9px -9px 20px #252a36;
     --shadow-neu-flat-sm: 5px 5px 12px #08090d, -5px -5px 10px #252a36;
@@ -96,7 +96,7 @@
     --shadow-neu-pressed-sm: inset 3px 3px 7px #08090d, inset -3px -3px 7px #252a36;
     --shadow-neu-convex: linear-gradient(145deg, #202430, #101217);
 
-    --gradient-hero: linear-gradient(135deg, #d97745 0%, #8b5cf6 50%, #e11d48 100%);
+    --gradient-hero: linear-gradient(135deg, #e27d49 0%, #a78bfa 50%, #f43f5e 100%);
   }
 }
 
@@ -120,11 +120,13 @@
   h1, h2 {
     font-family: 'Playfair Display', 'Cinzel', serif;
     letter-spacing: -0.025em;
+    color: hsl(var(--foreground));
   }
 
   h3, h4, h5, h6 {
     font-family: 'Cinzel', 'DM Sans', sans-serif;
     letter-spacing: -0.02em;
+    color: hsl(var(--foreground));
   }
 }
 
@@ -133,28 +135,28 @@
   .neu-flat {
     background-color: var(--neu-bg);
     box-shadow: var(--shadow-neu-flat);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.08);
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .neu-flat-sm {
     background-color: var(--neu-bg);
     box-shadow: var(--shadow-neu-flat-sm);
-    border: 1px solid rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .neu-flat-lg {
     background-color: var(--neu-bg);
     box-shadow: var(--shadow-neu-flat-lg);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .neu-pressed {
     background-color: var(--neu-bg);
     box-shadow: var(--shadow-neu-pressed);
-    border: 1px solid rgba(0, 0, 0, 0.04);
+    border: 1px solid rgba(0, 0, 0, 0.05);
     transition: all 0.25s ease;
   }
 
@@ -166,16 +168,16 @@
 
   /* Tactile Interactive Buttons */
   .neu-btn {
-    @apply relative inline-flex items-center justify-center font-bold rounded-2xl select-none cursor-pointer;
+    @apply relative inline-flex items-center justify-center font-bold rounded-2xl select-none cursor-pointer text-foreground;
     background-color: var(--neu-bg);
     box-shadow: var(--shadow-neu-flat);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .neu-btn:hover {
     box-shadow: var(--shadow-neu-flat-lg);
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.25);
     transform: translateY(-2px);
   }
 
@@ -186,9 +188,9 @@
 
   .neu-btn-primary {
     @apply relative inline-flex items-center justify-center font-black text-white rounded-2xl select-none cursor-pointer;
-    background: linear-gradient(135deg, hsl(var(--primary)), #b34a26);
+    background: linear-gradient(135deg, hsl(var(--primary)), #963210);
     box-shadow: 6px 6px 18px var(--neu-dark-shadow), -4px -4px 14px var(--neu-light-shadow), 0 4px 20px var(--neu-accent-glow);
-    border: 1px solid rgba(255, 255, 255, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -206,7 +208,7 @@
     @apply relative inline-flex items-center justify-center font-bold rounded-2xl select-none cursor-pointer text-foreground;
     background-color: var(--neu-bg);
     box-shadow: var(--shadow-neu-flat);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
@@ -225,7 +227,7 @@
     @apply w-full px-4 py-3.5 rounded-2xl text-foreground font-semibold placeholder:text-muted-foreground focus:outline-none transition-all duration-200;
     background-color: var(--neu-bg);
     box-shadow: var(--shadow-neu-pressed);
-    border: 1px solid rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   .neu-input:focus {
@@ -237,14 +239,14 @@
   .neu-card {
     background-color: var(--neu-bg);
     box-shadow: var(--shadow-neu-flat);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 2rem;
     transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .neu-card:hover {
-    box-shadow: var(--shadow-neu-flat-lg), 0 0 25px rgba(217, 119, 69, 0.15);
-    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: var(--shadow-neu-flat-lg), 0 0 25px rgba(226, 125, 73, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
     transform: translateY(-4px);
   }
 
@@ -261,15 +263,16 @@
     @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-bold select-none;
     background-color: var(--neu-bg);
     box-shadow: var(--shadow-neu-flat-sm);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
   }
 
-  /* Gradient Text Glow */
+  /* High-Contrast Gradient Text Glow */
   .text-gradient-hero {
     background: var(--gradient-hero);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    display: inline-block;
   }
 
   /* Custom Keyframe Background Graphics Animations */

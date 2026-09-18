@@ -9,20 +9,20 @@ export const FeaturedProducts = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-10">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full neu-flat text-xs font-black text-primary mb-3">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full neu-flat text-xs font-black text-primary mb-3 shadow-neu-flat-sm">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>Curated Releases</span>
+            <span className="uppercase tracking-widest text-[11px]">Curated Releases</span>
           </div>
-          <h2 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
+          <h2 className="font-display text-3xl md:text-5xl font-extrabold tracking-tight text-foreground">
             Flagship <span className="text-gradient-hero">Luxury Catalog</span>
           </h2>
-          <p className="text-xs sm:text-sm text-muted-foreground mt-1 font-medium">
+          <p className="text-xs sm:text-base text-muted-foreground mt-2 font-medium max-w-xl">
             Handcrafted with precision grade materials and acoustic spatial sound.
           </p>
         </div>
         <Link to="/shop">
-          <button className="neu-btn px-5 py-2.5 text-xs font-extrabold text-primary flex items-center gap-2">
-            <span>Explore All</span>
+          <button className="neu-btn px-6 py-3 text-xs font-extrabold text-primary flex items-center gap-2 shadow-neu-flat hover:shadow-neu-flat-lg">
+            <span>Explore Catalog</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </Link>

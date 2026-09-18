@@ -1,34 +1,38 @@
 import { useState } from "react";
-import { Heart, ShoppingBag, Star, Eye, Sparkles } from "lucide-react";
+import { Heart, ShoppingBag, Star, Sparkles } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
+import { Product } from "@/data/products";
 
 interface ProductCardProps {
-  id: string;
-  name: string;
-  price: number;
+  id?: string;
+  name?: string;
+  price?: number;
   originalPrice?: number;
-  image: string;
-  category: string;
-  rating: number;
+  image?: string;
+  category?: string;
+  rating?: number;
   isNew?: boolean;
   isSale?: boolean;
+  product?: Product;
 }
 
-export const ProductCard = ({
-  id,
-  name,
-  price,
-  originalPrice,
-  image,
-  category,
-  rating,
-  isNew,
-  isSale,
-}: ProductCardProps) => {
-  const [isHovered, setIsHovered] = useState(false);
+export const ProductCard = (props: ProductCardProps) => {
+  // Support both spread props ({...product}) and nested prop ({product})
+  const item = props.product || props;
+
+  const id = item.id || "product-item";
+  const name = item.name || "AETHERIA Luxury Product";
+  const price = typeof item.price === "number" ? item.price : 0;
+  const originalPrice = item.originalPrice;
+  const image = item.image || "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=1000&h=1000&fit=crop";
+  const category = item.category || "Electronics";
+  const rating = typeof item.rating === "number" && !isNaN(item.rating) ? item.rating : 5.0;
+  const isNew = Boolean(item.isNew);
+  const isSale = Boolean(item.isSale);
+
   const [showSparkles, setShowSparkles] = useState(false);
   const { addItem } = useCart();
   const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
@@ -38,7 +42,7 @@ export const ProductCard = ({
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    addItem({ id, name, price, image, category });
+    addItem({ id, name, price, image, category, rating } as any);
     setShowSparkles(true);
     toast.success(`${name} added to Bag! 🛍️`, {
       description: "Tactile order recorded successfully.",
@@ -53,16 +57,18 @@ export const ProductCard = ({
       removeFromWishlist(id);
       toast.info("Removed from saved collection");
     } else {
-      addToWishlist({ id, name, price, image, category, rating });
+      addToWishlist({ id, name, price, image, category, rating } as any);
       toast.success("Saved to your wishlist! 💖");
     }
   };
 
-  const discount = originalPrice
-    ? Math.round(((originalPrice - price) / originalPrice) * 100)
-    : 0;
+  const discount =
+    originalPrice && originalPrice > price
+      ? Math.round(((originalPrice - price) / originalPrice) * 100)
+      : 0;
 
   const formatPrice = (amount: number) => {
+    if (typeof amount !== "number" || isNaN(amount)) return "₹0";
     return new Intl.NumberFormat("en-IN", {
       style: "currency",
       currency: "INR",
@@ -72,11 +78,7 @@ export const ProductCard = ({
 
   return (
     <Link to={`/product/${id}`}>
-      <div
-        className="neu-card p-4 group relative flex flex-col justify-between h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-neu-flat-lg"
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
+      <div className="neu-card p-4 group relative flex flex-col justify-between h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-neu-flat-lg">
         {/* Sparkle Micro VFX */}
         {showSparkles && (
           <div className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center">
@@ -87,7 +89,7 @@ export const ProductCard = ({
                 style={{
                   top: `${30 + Math.random() * 40}%`,
                   left: `${20 + Math.random() * 60}%`,
-                  animationDuration: '0.8s',
+                  animationDuration: "0.8s",
                 }}
               />
             ))}
