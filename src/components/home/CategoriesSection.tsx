@@ -38,16 +38,16 @@ export const CategoriesSection = () => {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
         <div>
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full neu-flat text-xs font-black text-primary mb-3">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full neu-flat text-xs font-black text-primary mb-3 shadow-neu-flat-sm">
             <Sparkles className="w-3.5 h-3.5 text-primary" />
-            <span>Curated Disciplines</span>
+            <span className="uppercase tracking-widest text-[11px]">Curated Disciplines</span>
           </div>
-          <h2 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
+          <h2 className="font-display text-3xl md:text-5xl font-extrabold tracking-tight text-foreground">
             Explore <span className="text-gradient-hero">Craft Collections</span>
           </h2>
         </div>
 
-        <Link to="/categories" className="neu-btn px-5 py-2.5 text-xs font-extrabold text-primary flex items-center gap-2">
+        <Link to="/categories" className="neu-btn px-6 py-3 text-xs font-extrabold text-primary flex items-center gap-2 shadow-neu-flat hover:shadow-neu-flat-lg">
           <span>View All Collections</span>
           <ArrowRight className="w-4 h-4" />
         </Link>
@@ -67,7 +67,7 @@ export const CategoriesSection = () => {
                 alt={category.name}
                 className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
               />
-              <div className="absolute top-3 left-3 neu-badge text-[10px] text-primary font-black uppercase">
+              <div className="absolute top-3 left-3 neu-badge text-[10px] text-primary font-black uppercase shadow-neu-flat-sm">
                 {category.count}
               </div>
             </div>
