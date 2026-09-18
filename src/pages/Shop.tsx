@@ -3,31 +3,26 @@ import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { AIAssistant } from "@/components/ai/AIAssistant";
 import { CartDrawer } from "@/components/cart/CartDrawer";
-import { PRODUCTS, CATEGORIES } from "@/data/products";
 import { ProductCard } from "@/components/products/ProductCard";
-import { Sparkles, Grid3X3, LayoutGrid, SlidersHorizontal } from "lucide-react";
+import { useProductCatalog, SortOption } from "@/hooks/useProductCatalog";
+import { CATEGORIES } from "@/data/products";
+import { Sparkles, Grid3X3, LayoutGrid, SlidersHorizontal, Search, RotateCcw } from "lucide-react";
 
 const Shop = () => {
-  const [selectedCategory, setSelectedCategory] = useState("All");
-  const [sortBy, setSortBy] = useState("ai-score");
-  const [inStockOnly, setInStockOnly] = useState(false);
   const [gridCols, setGridCols] = useState<3 | 4>(4);
-
-  const filteredProducts = PRODUCTS.filter((product) => {
-    const matchesCategory = selectedCategory === "All" || product.category.toLowerCase() === selectedCategory.toLowerCase() || (selectedCategory === "Electronics" && product.category === "Electronics");
-    const matchesStock = !inStockOnly || product.stock > 0;
-    return matchesCategory && matchesStock;
-  });
-
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    switch (sortBy) {
-      case "price-low": return a.price - b.price;
-      case "price-high": return b.price - a.price;
-      case "rating": return b.rating - a.rating;
-      case "ai-score": return b.aiMatchScore - a.aiMatchScore;
-      default: return 0;
-    }
-  });
+  const {
+    products,
+    totalProducts,
+    selectedCategory,
+    setSelectedCategory,
+    searchQuery,
+    setSearchQuery,
+    sortOption,
+    setSortOption,
+    onlyInStock,
+    setOnlyInStock,
+    resetFilters,
+  } = useProductCatalog({ productsPerPage: 12 });
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-primary">
@@ -49,17 +44,30 @@ const Shop = () => {
             </p>
           </div>
 
-          {/* Filter Bar & Controls Panel */}
+          {/* Search & Filter Control Bar */}
           <div className="neu-flat p-4 rounded-3xl mb-8 flex flex-col lg:flex-row items-center justify-between gap-4">
+            {/* Search Input */}
+            <div className="relative w-full lg:w-72">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search products, materials, specs..."
+                className="w-full neu-input pl-10 pr-4 py-2.5 text-xs font-medium rounded-xl"
+              />
+            </div>
+
             {/* Category Filter Pills */}
             <div className="flex items-center gap-2 overflow-x-auto w-full lg:w-auto pb-2 lg:pb-0">
               {CATEGORIES.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
+                  onClick={() => setSelectedCategory(cat.id === "all" ? "All" : cat.name)}
                   className={`px-4 py-2.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all ${
-                    selectedCategory.toLowerCase() === cat.id.toLowerCase()
-                      ? "neu-pressed text-primary font-black"
+                    (selectedCategory === "All" && cat.id === "all") ||
+                    selectedCategory.toLowerCase() === cat.name.toLowerCase()
+                      ? "neu-pressed text-primary font-black shadow-neu-inner-glow"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -73,28 +81,42 @@ const Shop = () => {
               <div className="flex items-center gap-2 text-xs font-extrabold">
                 <SlidersHorizontal className="w-4 h-4 text-primary" />
                 <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="neu-input h-10 px-3 py-0 text-xs font-bold w-auto"
+                  value={sortOption}
+                  onChange={(e) => setSortOption(e.target.value as SortOption)}
+                  className="neu-input h-10 px-3 py-0 text-xs font-bold w-auto cursor-pointer"
                 >
-                  <option value="ai-score">Sort by Vector Match</option>
+                  <option value="featured">Sort by Vector Match</option>
                   <option value="price-low">Price: Low to High</option>
                   <option value="price-high">Price: High to Low</option>
                   <option value="rating">Top Rated (5.0 ★)</option>
+                  <option value="newest">New Arrivals</option>
                 </select>
               </div>
+
+              {/* Reset Filters */}
+              <button
+                onClick={resetFilters}
+                title="Reset Filters"
+                className="p-2 neu-btn rounded-xl text-muted-foreground hover:text-primary transition-colors"
+              >
+                <RotateCcw className="w-4 h-4" />
+              </button>
 
               {/* Grid Layout Switcher */}
               <div className="hidden sm:flex items-center gap-1.5 p-1 neu-pressed rounded-xl">
                 <button
                   onClick={() => setGridCols(3)}
-                  className={`p-2 rounded-lg transition-all ${gridCols === 3 ? "neu-flat text-primary" : "text-muted-foreground"}`}
+                  className={`p-2 rounded-lg transition-all ${
+                    gridCols === 3 ? "neu-flat text-primary" : "text-muted-foreground"
+                  }`}
                 >
                   <Grid3X3 className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setGridCols(4)}
-                  className={`p-2 rounded-lg transition-all ${gridCols === 4 ? "neu-flat text-primary" : "text-muted-foreground"}`}
+                  className={`p-2 rounded-lg transition-all ${
+                    gridCols === 4 ? "neu-flat text-primary" : "text-muted-foreground"
+                  }`}
                 >
                   <LayoutGrid className="w-4 h-4" />
                 </button>
@@ -102,26 +124,48 @@ const Shop = () => {
             </div>
           </div>
 
-          {/* Results Summary & Filter Toggle */}
-          <div className="flex items-center justify-between mb-6 text-xs font-bold text-muted-foreground">
-            <span>Showing <strong className="text-foreground">{sortedProducts.length}</strong> items in index</span>
-            <label className="cursor-pointer flex items-center gap-2">
+          {/* Results Summary & In-Stock Toggle */}
+          <div className="flex items-center justify-between mb-6 text-xs text-muted-foreground">
+            <p className="font-mono">
+              Showing <span className="font-bold text-foreground">{totalProducts}</span> luxury products
+            </p>
+            <label className="flex items-center gap-2 cursor-pointer select-none">
               <input
                 type="checkbox"
-                checked={inStockOnly}
-                onChange={(e) => setInStockOnly(e.target.checked)}
-                className="rounded neu-pressed accent-primary"
+                checked={onlyInStock}
+                onChange={(e) => setOnlyInStock(e.target.checked)}
+                className="rounded accent-amber-500"
               />
-              <span>In Stock Only</span>
+              <span>In-Stock Only</span>
             </label>
           </div>
 
           {/* Product Grid */}
-          <div className={`grid gap-6 ${gridCols === 3 ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-4"}`}>
-            {sortedProducts.map((product) => (
-              <ProductCard key={product.id} {...product} />
-            ))}
-          </div>
+          {products.length === 0 ? (
+            <div className="neu-flat rounded-3xl p-12 text-center my-12 space-y-4">
+              <Sparkles className="w-10 h-10 mx-auto text-amber-500/50" />
+              <h3 className="text-xl font-bold font-heading">No matching products found</h3>
+              <p className="text-xs text-muted-foreground max-w-sm mx-auto">
+                Try adjusting your search query, price filter, or selecting a different category.
+              </p>
+              <button
+                onClick={resetFilters}
+                className="px-6 py-2.5 neu-btn rounded-xl text-xs font-bold text-primary"
+              >
+                Reset All Filters
+              </button>
+            </div>
+          ) : (
+            <div
+              className={`grid grid-cols-1 sm:grid-cols-2 ${
+                gridCols === 3 ? "lg:grid-cols-3" : "lg:grid-cols-4"
+              } gap-6 md:gap-8`}
+            >
+              {products.map((product) => (
+                <ProductCard key={product.id} product={product} />
+              ))}
+            </div>
+          )}
         </div>
       </main>
 
