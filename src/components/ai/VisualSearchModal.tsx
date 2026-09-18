@@ -10,9 +10,9 @@ interface VisualSearchModalProps {
 }
 
 const SAMPLE_PHOTOS = [
-  { name: "Black Studio Headphones", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop" },
-  { name: "Titanium Metal Chronograph", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop" },
-  { name: "Performance Running Shoes", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop" }
+  { name: "Acoustic Headphones", img: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=200&h=200&fit=crop" },
+  { name: "Titanium Chronograph", img: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=200&h=200&fit=crop" },
+  { name: "Kinetic Runners", img: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=200&h=200&fit=crop" }
 ];
 
 export const VisualSearchModal = ({ isOpen, onClose }: VisualSearchModalProps) => {
@@ -30,7 +30,7 @@ export const VisualSearchModal = ({ isOpen, onClose }: VisualSearchModalProps) =
       const matches = AIService.searchByImage(sampleName);
       setMatchedResults(matches);
       setIsAnalyzing(false);
-    }, 1200);
+    }, 1100);
   };
 
   const handleProductClick = (id: string) => {
@@ -39,85 +39,92 @@ export const VisualSearchModal = ({ isOpen, onClose }: VisualSearchModalProps) =
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/65 backdrop-blur-md animate-slide-up">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-slide-up">
       <div className="fixed inset-0 -z-10" onClick={onClose} />
 
-      <div className="w-full max-w-xl bg-card/95 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-3xl p-6 shadow-2xl space-y-6">
+      <div className="w-full max-w-xl neu-flat-lg rounded-4xl p-6 sm:p-8 space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-border/60">
+        <div className="flex items-center justify-between pb-4 border-b border-border/40">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary to-magic flex items-center justify-center text-white shadow-glow">
-              <Camera className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-2xl neu-pressed flex items-center justify-center text-primary">
+              <Camera className="w-5 h-5 text-primary" />
             </div>
             <div>
-              <h3 className="font-display text-xl font-bold">Visual AI Match</h3>
-              <p className="text-xs text-muted-foreground">Find visually similar luxury items via image recognition</p>
+              <h3 className="font-display text-xl font-extrabold text-foreground">Visual AI Lens</h3>
+              <p className="text-xs text-muted-foreground font-medium">Instant feature extraction & zero-cost neural indexing</p>
             </div>
           </div>
-          <button onClick={onClose} className="p-2 rounded-full hover:bg-muted text-muted-foreground transition-colors">
+          <button onClick={onClose} className="w-9 h-9 rounded-xl neu-btn flex items-center justify-center text-muted-foreground hover:text-foreground">
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Upload Zone */}
-        <div className="border-2 border-dashed border-primary/30 hover:border-primary/60 rounded-3xl p-8 text-center bg-primary/5 transition-all duration-300 cursor-pointer">
-          <UploadCloud className="w-10 h-10 mx-auto text-primary mb-3 animate-float" />
-          <h4 className="font-semibold text-sm mb-1">Drag & Drop or Click to Upload Image</h4>
-          <p className="text-xs text-muted-foreground">Supports PNG, JPG, WebP up to 10MB</p>
+        {/* Recessed Drag & Drop Dropzone */}
+        <div className="neu-pressed rounded-3xl p-8 text-center cursor-pointer relative overflow-hidden group">
+          {/* Laser Scanner animation effect */}
+          {isAnalyzing && (
+            <div className="absolute left-0 right-0 h-1 bg-primary shadow-neu-glow animate-laser-scan z-20" />
+          )}
+
+          <UploadCloud className="w-10 h-10 mx-auto text-primary mb-3 group-hover:scale-110 transition-transform" />
+          <h4 className="font-extrabold text-sm text-foreground mb-1">Drag & Drop Image or Click to Scan</h4>
+          <p className="text-xs text-muted-foreground font-medium">Supports PNG, JPG, WebP (Processed 100% locally)</p>
         </div>
 
-        {/* Sample Selection */}
+        {/* Sample Photos selection */}
         <div>
-          <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-primary" /> Or select a visual sample to test:
+          <p className="text-xs font-black text-muted-foreground uppercase tracking-wider mb-3 flex items-center gap-1.5">
+            <Sparkles className="w-3.5 h-3.5 text-primary" /> Or test with sample visual vectors:
           </p>
           <div className="grid grid-cols-3 gap-3">
             {SAMPLE_PHOTOS.map((sample) => (
               <button
                 key={sample.name}
                 onClick={() => handleSelectSample(sample.name, sample.img)}
-                className={`relative rounded-2xl overflow-hidden border-2 transition-all group ${
-                  selectedPhoto === sample.img ? "border-primary shadow-glow scale-105" : "border-border/60 hover:border-primary/40"
+                className={`relative rounded-2xl overflow-hidden p-1 transition-all ${
+                  selectedPhoto === sample.img ? "neu-pressed" : "neu-flat hover:scale-[1.03]"
                 }`}
               >
-                <img src={sample.img} alt={sample.name} className="w-full h-24 object-cover group-hover:scale-110 transition-transform duration-500" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2">
-                  <span className="text-[10px] text-white font-medium line-clamp-1">{sample.name}</span>
+                <div className="aspect-square rounded-xl overflow-hidden relative">
+                  <img src={sample.img} alt={sample.name} className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex items-end p-2">
+                    <span className="text-[10px] text-white font-extrabold truncate">{sample.name}</span>
+                  </div>
                 </div>
               </button>
             ))}
           </div>
         </div>
 
-        {/* Analyzing Indicator */}
+        {/* Analyzing Status Indicator */}
         {isAnalyzing && (
-          <div className="py-8 text-center space-y-3 animate-pulse">
+          <div className="py-6 text-center space-y-2">
             <div className="w-8 h-8 border-3 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-            <p className="text-xs font-semibold text-primary">AETHER Neural Engine Analyzing Features & Vectors...</p>
+            <p className="text-xs font-extrabold text-primary">Scanning neural visual descriptors...</p>
           </div>
         )}
 
-        {/* Matched Results */}
+        {/* Matched Results Feed */}
         {!isAnalyzing && matchedResults.length > 0 && (
-          <div className="space-y-3 animate-slide-up pt-2">
-            <p className="text-xs font-semibold text-success flex items-center gap-1.5 uppercase tracking-wider">
-              <CheckCircle2 className="w-4 h-4" /> AI Matches Found:
+          <div className="space-y-3 pt-2">
+            <p className="text-xs font-black text-emerald-500 flex items-center gap-1.5 uppercase tracking-wider">
+              <CheckCircle2 className="w-4 h-4" /> Neural Match Results:
             </p>
-            <div className="space-y-2 max-h-48 overflow-y-auto">
+            <div className="space-y-2.5 max-h-48 overflow-y-auto">
               {matchedResults.map((product) => (
                 <div
                   key={product.id}
                   onClick={() => handleProductClick(product.id)}
-                  className="flex items-center justify-between p-3 rounded-2xl bg-muted/50 hover:bg-muted border border-border/40 cursor-pointer transition-all"
+                  className="flex items-center justify-between p-3 rounded-2xl neu-flat hover:shadow-neu-flat-lg cursor-pointer transition-all"
                 >
                   <div className="flex items-center gap-3">
-                    <img src={product.image} alt={product.name} className="w-12 h-12 rounded-xl object-cover" />
+                    <img src={product.image} alt={product.name} className="w-11 h-11 rounded-xl object-cover" />
                     <div>
-                      <h4 className="font-semibold text-xs">{product.name}</h4>
-                      <span className="text-[10px] text-primary font-bold">{product.aiMatchScore}% Visual Feature Match</span>
+                      <h4 className="font-extrabold text-xs text-foreground">{product.name}</h4>
+                      <span className="text-[10px] text-primary font-black">{product.aiMatchScore}% Feature Match</span>
                     </div>
                   </div>
-                  <span className="text-xs font-bold">₹{product.price.toLocaleString("en-IN")}</span>
+                  <span className="text-xs font-black text-foreground">₹{product.price.toLocaleString("en-IN")}</span>
                 </div>
               ))}
             </div>

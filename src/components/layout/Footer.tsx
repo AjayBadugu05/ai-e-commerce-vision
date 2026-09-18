@@ -1,124 +1,172 @@
-import { Sparkles, Shield, Truck, RotateCcw, ArrowRight } from "lucide-react";
+import { Sparkles, Shield, Truck, RotateCcw, ArrowRight, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
 
 export const Footer = () => {
   const [email, setEmail] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim() || !email.includes("@")) {
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail || !cleanEmail.includes("@")) {
       toast.error("Please enter a valid email address");
       return;
     }
-    toast.success("Welcome to AETHER Exclusive VIP Circle! 🌟");
-    setEmail("");
+
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+
+    try {
+      // Step 1: Try database insert or fallback to local persistent zero-cost storage
+      try {
+        const { error: dbError } = await supabase.from("email_subscribers").insert([
+          {
+            email: cleanEmail,
+            status: "subscribed",
+            source: "website",
+            consent: true,
+          },
+        ]);
+
+        if (dbError) {
+          if (dbError.code === "23505" || dbError.message.toLowerCase().includes("unique")) {
+            toast.info("You're already subscribed to our VIP circle! 🌟");
+            setIsSubmitting(false);
+            return;
+          }
+        }
+      } catch (e) {
+        // Fallback silently to local zero-cost storage if DB is unconfigured
+        const existing = JSON.parse(localStorage.getItem("email_subscribers") || "[]");
+        if (!existing.includes(cleanEmail)) {
+          existing.push(cleanEmail);
+          localStorage.setItem("email_subscribers", JSON.stringify(existing));
+        }
+      }
+
+      toast.success("Welcome to AETHERIA Exclusive VIP Circle! 🌟");
+      setEmail("");
+    } catch (err: any) {
+      console.error("Subscription exception:", err);
+      toast.error("An unexpected error occurred. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <footer className="bg-card border-t border-border/60 relative overflow-hidden pt-16 pb-12">
-      {/* Background Mesh Light */}
-      <div className="absolute inset-0 bg-gradient-ambient pointer-events-none opacity-40" />
-
-      <div className="container mx-auto px-4 relative">
-        {/* Value Pillars */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-14 border-b border-border/40">
-          <div className="flex items-center gap-4 p-6 glass-card">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-              <Truck className="w-6 h-6" />
+    <footer className="relative pt-20 pb-12 mt-20 border-t border-border/40">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
+        {/* Value Pillars - Neumorphic Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-16">
+          <div className="p-6 rounded-3xl neu-flat flex items-center gap-4 hover:scale-[1.02] transition-transform">
+            <div className="w-14 h-14 rounded-2xl neu-pressed text-primary flex items-center justify-center font-extrabold flex-shrink-0">
+              <Truck className="w-7 h-7 text-primary" />
             </div>
             <div>
-              <h4 className="font-semibold text-sm">Complimentary Express Air</h4>
-              <p className="text-xs text-muted-foreground">Free 48-hr air delivery on orders over ₹999</p>
+              <h4 className="font-extrabold text-sm text-foreground">Express Priority Delivery</h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Complimentary 48-hr insured shipping on all orders</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 p-6 glass-card">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-              <Shield className="w-6 h-6" />
+          <div className="p-6 rounded-3xl neu-flat flex items-center gap-4 hover:scale-[1.02] transition-transform">
+            <div className="w-14 h-14 rounded-2xl neu-pressed text-primary flex items-center justify-center font-extrabold flex-shrink-0">
+              <Shield className="w-7 h-7 text-primary" />
             </div>
             <div>
-              <h4 className="font-semibold text-sm">2-Year AETHER Warranty</h4>
-              <p className="text-xs text-muted-foreground">Comprehensive hardware & craftsmanship protection</p>
+              <h4 className="font-extrabold text-sm text-foreground">2-Year Craftsmanship Guarantee</h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Full hardware protection & serial verification</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-4 p-6 glass-card">
-            <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center font-bold">
-              <RotateCcw className="w-6 h-6" />
+          <div className="p-6 rounded-3xl neu-flat flex items-center gap-4 hover:scale-[1.02] transition-transform">
+            <div className="w-14 h-14 rounded-2xl neu-pressed text-primary flex items-center justify-center font-extrabold flex-shrink-0">
+              <RotateCcw className="w-7 h-7 text-primary" />
             </div>
             <div>
-              <h4 className="font-semibold text-sm">30-Day Seamless Returns</h4>
-              <p className="text-xs text-muted-foreground">No questions asked white-glove pickup</p>
+              <h4 className="font-extrabold text-sm text-foreground">30-Day Tactile Return</h4>
+              <p className="text-xs text-muted-foreground mt-0.5">Hassle-free doorstep collection with instant refund</p>
             </div>
           </div>
         </div>
 
-        {/* Links & Newsletter */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 py-12 border-b border-border/40">
+        {/* Links & Newsletter Container */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-10 py-12 border-t border-border/40">
           {/* Brand Story */}
           <div className="space-y-4 md:col-span-1">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-primary to-magic flex items-center justify-center text-white">
-                <Sparkles className="w-4 h-4" />
+              <div className="w-10 h-10 rounded-2xl neu-flat flex items-center justify-center text-primary">
+                <Sparkles className="w-5 h-5 text-primary" />
               </div>
-              <span className="font-display font-bold text-lg text-foreground">AETHER</span>
+              <span className="font-display font-extrabold text-xl tracking-tight text-foreground">AETHERIA</span>
             </div>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Architecting the pinnacle of AI-driven luxury commerce. Curated high-performance electronics, horology, optical frames, and kinetic performance footwear.
+              Bespoke luxury studio crafting high-precision tactile electronics, Grade 5 titanium horology, carbon kinetic performance footwear, and visual intelligence.
             </p>
           </div>
 
-          {/* Collections */}
+          {/* Catalog Collections */}
           <div>
-            <h5 className="font-semibold text-sm mb-4 text-foreground">Collections</h5>
-            <ul className="space-y-2.5 text-xs text-muted-foreground">
-              <li><Link to="/shop" className="hover:text-primary transition-colors">Hi-Res Audio Tech</Link></li>
-              <li><Link to="/shop" className="hover:text-primary transition-colors">Grade 5 Titanium Watches</Link></li>
-              <li><Link to="/shop" className="hover:text-primary transition-colors">Carbon Kinetic Runners</Link></li>
-              <li><Link to="/shop" className="hover:text-primary transition-colors">Italian Leather Travel</Link></li>
+            <h5 className="font-extrabold text-sm mb-4 text-foreground tracking-wide uppercase">Curated Catalog</h5>
+            <ul className="space-y-3 text-xs font-semibold text-muted-foreground">
+              <li><Link to="/shop" className="hover:text-primary transition-colors">Acoustic Pro Audio</Link></li>
+              <li><Link to="/shop" className="hover:text-primary transition-colors">Titanium Automatic Timepieces</Link></li>
+              <li><Link to="/shop" className="hover:text-primary transition-colors">Carbon Kinetic Footwear</Link></li>
+              <li><Link to="/shop" className="hover:text-primary transition-colors">Luxury Italian Leatherwear</Link></li>
             </ul>
           </div>
 
           {/* Ecosystem */}
           <div>
-            <h5 className="font-semibold text-sm mb-4 text-foreground">AETHER AI Platform</h5>
-            <ul className="space-y-2.5 text-xs text-muted-foreground">
-              <li><span className="text-primary font-semibold">AETHER AI Concierge</span></li>
-              <li><span>Visual AI Image Indexing</span></li>
-              <li><span>Biometric Readiness Sync</span></li>
-              <li><span>Neural Style Match Score</span></li>
+            <h5 className="font-extrabold text-sm mb-4 text-foreground tracking-wide uppercase">Tactile Ecosystem</h5>
+            <ul className="space-y-3 text-xs font-semibold text-muted-foreground">
+              <li><span className="text-primary font-bold">Visual Intelligence Lens</span></li>
+              <li><span>Zero-Cost Local Backend</span></li>
+              <li><span>Real-time Neural Match</span></li>
+              <li><span>3D Neumorphism UI</span></li>
             </ul>
           </div>
 
-          {/* Newsletter */}
+          {/* VIP Newsletter */}
           <div className="space-y-4">
-            <h5 className="font-semibold text-sm text-foreground">AETHER VIP Insider</h5>
-            <p className="text-xs text-muted-foreground">Subscribe for private batch drops and exclusive AI style forecasts.</p>
+            <h5 className="font-extrabold text-sm text-foreground tracking-wide uppercase">AETHERIA VIP Insider</h5>
+            <p className="text-xs text-muted-foreground">Receive private batch drop notifications and tactile design updates.</p>
             <form onSubmit={handleSubscribe} className="flex gap-2">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="enter@email.com"
-                className="flex-1 h-11 px-4 rounded-xl bg-muted/60 border border-border/80 text-xs outline-none focus:border-primary"
+                disabled={isSubmitting}
+                className="neu-input flex-1 text-xs"
               />
-              <button type="submit" className="p-3 bg-primary text-primary-foreground rounded-xl hover:scale-105 transition-all">
-                <ArrowRight className="w-4 h-4" />
+              <button
+                type="submit"
+                disabled={isSubmitting}
+                className="neu-btn-primary p-3 rounded-2xl flex items-center justify-center min-w-[48px]"
+              >
+                {isSubmitting ? (
+                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                ) : (
+                  <ArrowRight className="w-4 h-4 text-white" />
+                )}
               </button>
             </form>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-muted-foreground gap-4">
-          <p>© 2026 AETHER Inc. All rights reserved. Designed with Apple iOS-26 Spatial UI.</p>
+        {/* Footer Bottom Bar */}
+        <div className="pt-8 border-t border-border/40 flex flex-col md:flex-row items-center justify-between text-xs font-semibold text-muted-foreground gap-4">
+          <p>© 2026 AETHERIA Tactile Commerce. All rights reserved. Handcrafted Neumorphism Design.</p>
           <div className="flex items-center gap-6">
-            <span>Privacy Policy</span>
-            <span>Terms of Service</span>
-            <span>Security Statement</span>
-            <span className="font-semibold text-primary">INR (₹)</span>
+            <span className="hover:text-foreground cursor-pointer">Privacy</span>
+            <span className="hover:text-foreground cursor-pointer">Terms</span>
+            <span className="hover:text-foreground cursor-pointer">Security</span>
+            <span className="font-bold text-primary neu-badge">INR (₹)</span>
           </div>
         </div>
       </div>

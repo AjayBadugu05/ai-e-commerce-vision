@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        display: ['Plus Jakarta Sans', 'sans-serif'],
+        sans: ['DM Sans', 'Plus Jakarta Sans', 'sans-serif'],
+        display: ['Playfair Display', 'Cinzel', 'serif'],
+        serif: ['Playfair Display', 'Cinzel', 'serif'],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -69,8 +70,13 @@ export default {
         "3xl": "2.25rem",
         "4xl": "3rem",
       },
-      borderWidth: {
-        '1.5': '1.5px',
+      boxShadow: {
+        'neu-flat': 'var(--shadow-neu-flat)',
+        'neu-flat-sm': 'var(--shadow-neu-flat-sm)',
+        'neu-flat-lg': 'var(--shadow-neu-flat-lg)',
+        'neu-pressed': 'var(--shadow-neu-pressed)',
+        'neu-pressed-sm': 'var(--shadow-neu-pressed-sm)',
+        'neu-glow': '0 0 25px var(--neu-accent-glow)',
       },
       keyframes: {
         "accordion-down": {
@@ -83,7 +89,7 @@ export default {
         },
         float: {
           "0%, 100%": { transform: "translateY(0px) rotate(0deg)" },
-          "50%": { transform: "translateY(-12px) rotate(1deg)" },
+          "50%": { transform: "translateY(-12px) rotate(1.5deg)" },
         },
         "pulse-glow": {
           "0%, 100%": { opacity: "0.6", transform: "scale(1)" },
@@ -110,15 +116,7 @@ export default {
         "slide-up": "slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards",
         "slide-in-right": "slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards",
       },
-      boxShadow: {
-        glass: "0 8px 32px 0 rgba(0, 0, 0, 0.08)",
-        "glass-lg": "0 20px 50px 0 rgba(0, 0, 0, 0.12)",
-        glow: "0 0 40px -10px rgba(59, 130, 246, 0.3)",
-        card: "0 10px 30px -5px rgba(0, 0, 0, 0.05)",
-        hover: "0 25px 50px -12px rgba(0, 0, 0, 0.15)",
-      },
     },
   },
   plugins: [require("tailwindcss-animate")],
 } satisfies Config;
-

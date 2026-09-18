@@ -1,4 +1,4 @@
-import { ArrowRight, Zap, Timer, Gift } from "lucide-react";
+import { ArrowRight, Zap, Gift } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 
@@ -14,24 +14,19 @@ export const PromoSection = () => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         let { days, hours, minutes, seconds } = prev;
-        
-        if (seconds > 0) {
-          seconds--;
-        } else {
+        if (seconds > 0) seconds--;
+        else {
           seconds = 59;
-          if (minutes > 0) {
-            minutes--;
-          } else {
+          if (minutes > 0) minutes--;
+          else {
             minutes = 59;
-            if (hours > 0) {
-              hours--;
-            } else {
+            if (hours > 0) hours--;
+            else {
               hours = 23;
               if (days > 0) days--;
             }
           }
         }
-        
         return { days, hours, minutes, seconds };
       });
     }, 1000);
@@ -40,48 +35,36 @@ export const PromoSection = () => {
   }, []);
 
   return (
-    <section className="container mx-auto px-4 py-10">
-      <div className="relative rounded-4xl overflow-hidden fun-card border-4 border-secondary/30">
-        {/* Animated Background */}
-        <div className="absolute inset-0 bg-gradient-to-r from-secondary via-accent to-secondary animate-rainbow" style={{ backgroundSize: "200% auto" }} />
-        
-        {/* Pattern Overlay */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, white 2px, transparent 0)`,
-            backgroundSize: '24px 24px'
-          }} />
-        </div>
-
-        <div className="relative px-8 py-16 md:py-20 flex flex-col md:flex-row items-center justify-between gap-8">
-          {/* Content */}
-          <div className="max-w-xl text-center md:text-left text-white">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-sm mb-6 animate-wiggle">
-              <Zap className="w-5 h-5" />
-              <span className="font-bold">Flash Sale!</span>
-              <Gift className="w-5 h-5" />
-            </div>
-            <h2 className="font-display text-4xl md:text-6xl font-bold mb-4">
-              Up to <span className="bg-white text-secondary px-3 rounded-xl">50%</span> OFF
-            </h2>
-            <p className="text-white/90 mb-8 text-lg">
-              Don't miss out on incredible deals! Hurry, offer ends soon! ⏰
-            </p>
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+      <div className="neu-flat-lg rounded-4xl p-8 sm:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+        {/* Left Copy */}
+        <div className="max-w-xl text-center md:text-left space-y-4">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full neu-pressed text-xs font-black text-rose-500">
+            <Zap className="w-4 h-4 text-rose-500 animate-bounce" />
+            <span>Limited Batch Release</span>
+          </div>
+          <h2 className="font-display text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground">
+            Up to <span className="text-primary">40% OFF</span> Priority Drops
+          </h2>
+          <p className="text-xs sm:text-sm text-muted-foreground font-medium leading-relaxed">
+            Exclusive tactile editions crafted with titanium hardware & spatial audio drivers.
+          </p>
+          <div className="pt-2">
             <Link to="/deals">
-              <button className="bg-white text-secondary font-bold px-8 py-4 rounded-2xl shadow-lg hover:scale-105 transition-transform flex items-center gap-2 mx-auto md:mx-0">
-                Shop Flash Sale
-                <ArrowRight className="w-5 h-5" />
+              <button className="neu-btn-primary px-8 py-3.5 text-xs font-extrabold inline-flex items-center gap-2">
+                <span>Inspect Flash Drop</span>
+                <ArrowRight className="w-4 h-4 text-white" />
               </button>
             </Link>
           </div>
+        </div>
 
-          {/* Timer */}
-          <div className="flex gap-3">
-            <TimeBox value={String(timeLeft.days).padStart(2, '0')} label="Days" />
-            <TimeBox value={String(timeLeft.hours).padStart(2, '0')} label="Hours" />
-            <TimeBox value={String(timeLeft.minutes).padStart(2, '0')} label="Mins" />
-            <TimeBox value={String(timeLeft.seconds).padStart(2, '0')} label="Secs" />
-          </div>
+        {/* Right Countdown Neumorphic Nodes */}
+        <div className="flex gap-3 sm:gap-4">
+          <TimeBox value={String(timeLeft.days).padStart(2, '0')} label="Days" />
+          <TimeBox value={String(timeLeft.hours).padStart(2, '0')} label="Hours" />
+          <TimeBox value={String(timeLeft.minutes).padStart(2, '0')} label="Mins" />
+          <TimeBox value={String(timeLeft.seconds).padStart(2, '0')} label="Secs" />
         </div>
       </div>
     </section>
@@ -89,11 +72,11 @@ export const PromoSection = () => {
 };
 
 const TimeBox = ({ value, label }: { value: string; label: string }) => (
-  <div className="bg-white rounded-2xl px-4 py-3 text-center min-w-[70px] shadow-lg">
-    <div className="font-display text-3xl md:text-4xl font-bold text-gradient-hero">
+  <div className="neu-pressed rounded-3xl p-3 sm:p-4 text-center min-w-[70px] sm:min-w-[80px]">
+    <div className="font-display text-2xl sm:text-3xl font-black text-primary">
       {value}
     </div>
-    <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+    <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">
       {label}
     </div>
   </div>

@@ -1,7 +1,7 @@
 import { useState } from "react";
-import { Heart, ShoppingCart, Star, Eye, Sparkles } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Heart, ShoppingBag, Star, Eye, Sparkles } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/contexts/WishlistContext";
 import { toast } from "sonner";
 import { Link } from "react-router-dom";
 
@@ -28,20 +28,34 @@ export const ProductCard = ({
   isNew,
   isSale,
 }: ProductCardProps) => {
-  const [isLiked, setIsLiked] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
+  const [showSparkles, setShowSparkles] = useState(false);
   const { addItem } = useCart();
+  const { isInWishlist, addToWishlist, removeFromWishlist } = useWishlist();
+
+  const isLiked = isInWishlist(id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     addItem({ id, name, price, image, category });
-    setShowConfetti(true);
-    toast.success(`${name} added to cart! 🎉`, {
-      description: "Ready for checkout!",
+    setShowSparkles(true);
+    toast.success(`${name} added to Bag! 🛍️`, {
+      description: "Tactile order recorded successfully.",
     });
-    setTimeout(() => setShowConfetti(false), 1000);
+    setTimeout(() => setShowSparkles(false), 800);
+  };
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isLiked) {
+      removeFromWishlist(id);
+      toast.info("Removed from saved collection");
+    } else {
+      addToWishlist({ id, name, price, image, category, rating });
+      toast.success("Saved to your wishlist! 💖");
+    }
   };
 
   const discount = originalPrice
@@ -59,127 +73,110 @@ export const ProductCard = ({
   return (
     <Link to={`/product/${id}`}>
       <div
-        className="product-pop-card group relative"
+        className="neu-card p-4 group relative flex flex-col justify-between h-full transition-all duration-300 hover:-translate-y-2 hover:shadow-neu-flat-lg"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Confetti Effect */}
-        {showConfetti && (
-          <div className="absolute inset-0 pointer-events-none z-20 flex items-center justify-center">
-            {[...Array(8)].map((_, i) => (
+        {/* Sparkle Micro VFX */}
+        {showSparkles && (
+          <div className="absolute inset-0 pointer-events-none z-30 flex items-center justify-center">
+            {[...Array(6)].map((_, i) => (
               <Sparkles
                 key={i}
-                className="absolute text-accent animate-confetti"
+                className="absolute text-primary animate-ping"
                 style={{
+                  top: `${30 + Math.random() * 40}%`,
                   left: `${20 + Math.random() * 60}%`,
-                  animationDelay: `${i * 0.1}s`,
+                  animationDuration: '0.8s',
                 }}
               />
             ))}
           </div>
         )}
 
-        {/* Image Container */}
-        <div className="relative aspect-square overflow-hidden rounded-t-3xl bg-muted">
-          <img
-            src={image}
-            alt={name}
-            className="product-image w-full h-full object-cover transition-transform duration-700"
-          />
+        <div className="space-y-4">
+          {/* Inset Recessed Image Viewport */}
+          <div className="neu-image-frame relative aspect-square w-full overflow-hidden bg-muted">
+            <img
+              src={image}
+              alt={name}
+              className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
+            />
 
-          {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-2">
-            {isNew && (
-              <span className="badge-new animate-wiggle">
-                NEW ✨
-              </span>
-            )}
-            {isSale && discount > 0 && (
-              <span className="badge-sale animate-bounce-slow">
-                -{discount}% 🔥
-              </span>
-            )}
-          </div>
+            {/* Badges */}
+            <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10">
+              {isNew && (
+                <span className="neu-badge text-[10px] text-primary font-black tracking-wider uppercase">
+                  NEW BATCH
+                </span>
+              )}
+              {isSale && discount > 0 && (
+                <span className="neu-badge text-[10px] text-rose-500 font-black tracking-wider uppercase">
+                  -{discount}% OFF
+                </span>
+              )}
+            </div>
 
-          {/* Quick Actions */}
-          <div
-            className={`quick-actions absolute top-3 right-3 flex flex-col gap-2 transition-all duration-300 ${
-              isHovered ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2"
-            }`}
-          >
-            <Button
-              variant="ghost"
-              size="icon"
-              className={`w-10 h-10 rounded-2xl bg-card shadow-card hover:scale-110 transition-transform ${
-                isLiked ? "text-secondary" : ""
+            {/* Wishlist Tactile Button */}
+            <button
+              onClick={handleToggleWishlist}
+              className={`absolute top-3 right-3 w-9 h-9 rounded-xl neu-btn flex items-center justify-center z-10 transition-all ${
+                isLiked ? "text-rose-500 font-bold" : "text-muted-foreground hover:text-foreground"
               }`}
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setIsLiked(!isLiked);
-                if (!isLiked) toast.success("Added to wishlist! 💖");
-              }}
+              title="Add to Wishlist"
             >
-              <Heart className={`w-5 h-5 ${isLiked ? "fill-secondary" : ""}`} />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="w-10 h-10 rounded-2xl bg-card shadow-card hover:scale-110 transition-transform"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-              }}
-            >
-              <Eye className="w-5 h-5" />
-            </Button>
+              <Heart className={`w-4 h-4 ${isLiked ? "fill-rose-500" : ""}`} />
+            </button>
           </div>
 
-          {/* Add to Cart */}
-          <div
-            className={`absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-foreground/80 to-transparent transition-all duration-300 ${
-              isHovered ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            }`}
-          >
-            <Button
-              className="w-full btn-bouncy h-12 text-sm"
-              onClick={handleAddToCart}
-            >
-              <ShoppingCart className="w-4 h-4 mr-2" />
-              Add to Cart
-            </Button>
+          {/* Product Meta */}
+          <div className="space-y-1.5 px-1">
+            <span className="text-[10px] font-extrabold uppercase tracking-widest text-primary">
+              {category}
+            </span>
+            <h3 className="font-display font-bold text-sm text-foreground line-clamp-2 group-hover:text-primary transition-colors leading-snug">
+              {name}
+            </h3>
+
+            {/* Rating Stars */}
+            <div className="flex items-center gap-1.5 pt-1">
+              <div className="flex items-center gap-0.5 text-amber-500">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star
+                    key={i}
+                    className={`w-3.5 h-3.5 ${
+                      i < Math.floor(rating) ? "fill-amber-500 text-amber-500" : "text-muted/40"
+                    }`}
+                  />
+                ))}
+              </div>
+              <span className="text-[11px] font-bold text-muted-foreground">
+                {rating.toFixed(1)}
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Content */}
-        <div className="p-4 space-y-2">
-          <p className="text-xs font-semibold text-primary uppercase tracking-wider">
-            {category}
-          </p>
-          <h3 className="font-display font-semibold text-sm line-clamp-2 group-hover:text-primary transition-colors">
-            {name}
-          </h3>
-          <div className="flex items-center gap-1">
-            {Array.from({ length: 5 }).map((_, i) => (
-              <Star
-                key={i}
-                className={`w-4 h-4 ${
-                  i < rating ? "fill-accent text-accent" : "text-muted"
-                }`}
-              />
-            ))}
-            <span className="text-xs text-muted-foreground ml-1">({rating}.0)</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-display font-bold text-xl text-gradient-hero">
+        {/* Pricing & Add to Cart Footer */}
+        <div className="pt-4 border-t border-border/40 mt-4 flex items-center justify-between gap-2 px-1">
+          <div className="flex flex-col">
+            <span className="font-display font-extrabold text-base text-foreground">
               {formatPrice(price)}
             </span>
             {originalPrice && (
-              <span className="text-sm text-muted-foreground line-through">
+              <span className="text-[11px] font-medium text-muted-foreground line-through">
                 {formatPrice(originalPrice)}
               </span>
             )}
           </div>
+
+          <button
+            onClick={handleAddToCart}
+            className="neu-btn-primary px-3.5 py-2 text-xs font-bold flex items-center gap-1.5"
+          >
+            <ShoppingBag className="w-3.5 h-3.5 text-white" />
+            <span>Add</span>
+          </button>
         </div>
       </div>
     </Link>

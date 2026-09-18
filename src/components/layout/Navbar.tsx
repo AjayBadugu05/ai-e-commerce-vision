@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { ShoppingBag, Search, User, Menu, X, Sparkles, Heart, Camera } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -12,68 +12,82 @@ export const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSpotlightOpen, setIsSpotlightOpen] = useState(false);
   const [isVisualSearchOpen, setIsVisualSearchOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const { cartCount, setIsCartOpen } = useCart();
   const { wishlistCount } = useWishlist();
   const location = useLocation();
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
   const isActive = (path: string) => location.pathname === path;
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-background/70 backdrop-blur-2xl border-b border-white/20 dark:border-white/10 shadow-glass">
-        <div className="container mx-auto px-4">
-          <div className="flex items-center justify-between h-20">
-            {/* Brand Logo */}
+      <header className="fixed top-0 left-0 right-0 z-50 px-3 sm:px-6 pt-4 pb-2 transition-all duration-300">
+        <div 
+          className={`max-w-7xl mx-auto rounded-3xl transition-all duration-300 ${
+            scrolled ? "neu-flat-lg py-1 px-4 sm:px-6" : "neu-flat py-2 px-4 sm:px-6"
+          }`}
+        >
+          <div className="flex items-center justify-between h-16">
+            {/* Tactile Brand Logo */}
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-primary via-magic to-accent flex items-center justify-center text-white font-bold shadow-lg group-hover:scale-105 transition-transform">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="w-11 h-11 rounded-2xl neu-flat flex items-center justify-center text-primary group-hover:scale-105 active:shadow-neu-pressed transition-all duration-300">
+                <Sparkles className="w-5 h-5 text-primary animate-pulse" />
               </div>
               <div className="flex flex-col">
-                <span className="font-display text-xl font-bold tracking-tight text-foreground group-hover:text-primary transition-colors">
-                  AETHER
+                <span className="font-display text-xl font-extrabold tracking-tight text-foreground group-hover:text-primary transition-colors">
+                  AETHERIA
                 </span>
-                <span className="text-[10px] text-muted-foreground uppercase tracking-widest font-semibold -mt-1">
-                  Visionary Commerce
+                <span className="text-[9px] text-muted-foreground uppercase tracking-widest font-extrabold -mt-1">
+                  Tactile Visual Studio
                 </span>
               </div>
             </Link>
 
-            {/* Desktop Navigation Links */}
-            <div className="hidden md:flex items-center gap-1 p-1 bg-card/60 backdrop-blur-xl border border-border/60 rounded-2xl">
+            {/* Desktop Navigation Links Container */}
+            <div className="hidden md:flex items-center gap-2 p-1.5 neu-pressed rounded-2xl">
               <NavLink to="/" active={isActive("/")}>Home</NavLink>
               <NavLink to="/shop" active={isActive("/shop")}>Catalog</NavLink>
               <NavLink to="/categories" active={isActive("/categories")}>Collections</NavLink>
-              <NavLink to="/deals" active={isActive("/deals")}>Flash Deals</NavLink>
+              <NavLink to="/deals" active={isActive("/deals")}>Offers</NavLink>
             </div>
 
-            {/* Actions */}
-            <div className="flex items-center gap-2">
-              {/* Spotlight Search Launcher */}
+            {/* Actions & Utilities */}
+            <div className="flex items-center gap-2.5">
+              {/* Spotlight Recessed Search Button */}
               <button
                 onClick={() => setIsSpotlightOpen(true)}
-                className="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-muted/60 hover:bg-muted border border-border/60 text-xs font-medium text-muted-foreground transition-all"
+                className="hidden lg:flex items-center gap-2.5 px-4 py-2.5 rounded-2xl neu-pressed text-xs font-semibold text-muted-foreground hover:text-foreground transition-all"
+                title="Search Catalog (⌘K)"
               >
                 <Search className="w-4 h-4 text-primary" />
-                <span>Search</span>
-                <span className="px-1.5 py-0.5 text-[10px] font-mono bg-card rounded-md border border-border">⌘K</span>
+                <span>Search collection...</span>
+                <kbd className="px-2 py-0.5 text-[10px] font-mono neu-flat rounded-md text-foreground">⌘K</kbd>
               </button>
 
-              {/* Visual AI Search Launcher */}
+              {/* Visual AI Search Trigger */}
               <button
                 onClick={() => setIsVisualSearchOpen(true)}
-                className="p-2.5 rounded-2xl bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30 transition-all hover:scale-105"
-                title="AI Visual Image Search"
+                className="p-3 rounded-2xl neu-btn text-primary hover:text-primary transition-all"
+                title="AI Visual Lens Search"
               >
                 <Camera className="w-4.5 h-4.5" />
               </button>
 
               {/* Wishlist Link */}
               <Link to="/profile">
-                <button className="relative p-2.5 rounded-2xl bg-card/60 hover:bg-card border border-border/60 text-foreground transition-all hover:scale-105">
+                <button className="relative p-3 rounded-2xl neu-btn text-foreground hover:text-rose-500 transition-all">
                   <Heart className="w-4.5 h-4.5" />
                   {wishlistCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-rose-500 rounded-full text-[10px] flex items-center justify-center text-white font-bold shadow-md">
+                    <span className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-rose-500 rounded-full text-[10px] flex items-center justify-center text-white font-extrabold shadow-md">
                       {wishlistCount}
                     </span>
                   )}
@@ -83,35 +97,34 @@ export const Navbar = () => {
               {/* Cart Drawer Trigger */}
               <button
                 onClick={() => setIsCartOpen(true)}
-                className="relative p-2.5 rounded-2xl bg-primary text-primary-foreground hover:scale-105 active:scale-95 shadow-md shadow-primary/30 transition-all flex items-center gap-2 px-4"
+                className="relative neu-btn-primary px-4 py-2.5 flex items-center gap-2"
               >
-                <ShoppingBag className="w-4.5 h-4.5" />
-                <span className="hidden sm:inline-block text-xs font-bold">Bag</span>
+                <ShoppingBag className="w-4.5 h-4.5 text-white" />
+                <span className="hidden sm:inline-block text-xs font-bold text-white">Bag</span>
                 {cartCount > 0 && (
-                  <span className="w-5 h-5 bg-white text-primary rounded-full text-[11px] flex items-center justify-center font-bold">
+                  <span className="w-5 h-5 bg-white text-primary rounded-full text-[11px] flex items-center justify-center font-black shadow-inner">
                     {cartCount}
                   </span>
                 )}
               </button>
 
+              {/* Tactile Theme Toggle */}
               <ThemeToggle />
 
-              {/* Mobile Menu Toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="md:hidden rounded-2xl"
+              {/* Mobile Menu Button */}
+              <button
+                className="md:hidden p-3 rounded-2xl neu-btn text-foreground"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
               >
                 {isMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-              </Button>
+              </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Dropdown Menu */}
+        {/* Mobile Neumorphic Dropdown Menu */}
         {isMenuOpen && (
-          <div className="md:hidden bg-card/95 backdrop-blur-2xl border-t border-border p-4 space-y-2 animate-slide-up">
+          <div className="md:hidden max-w-7xl mx-auto mt-2 neu-flat-lg rounded-3xl p-4 space-y-2 animate-slide-up">
             <MobileNavLink to="/" onClick={() => setIsMenuOpen(false)} active={isActive("/")}>Home</MobileNavLink>
             <MobileNavLink to="/shop" onClick={() => setIsMenuOpen(false)} active={isActive("/shop")}>Catalog</MobileNavLink>
             <MobileNavLink to="/categories" onClick={() => setIsMenuOpen(false)} active={isActive("/categories")}>Collections</MobileNavLink>
@@ -119,12 +132,10 @@ export const Navbar = () => {
             <MobileNavLink to="/profile" onClick={() => setIsMenuOpen(false)} active={isActive("/profile")}>Dashboard & Wishlist</MobileNavLink>
           </div>
         )}
-      </nav>
+      </header>
 
-      {/* Global Spotlight Search Overlay */}
+      {/* Global Search Overlays */}
       <SpotlightSearch isOpen={isSpotlightOpen} onClose={() => setIsSpotlightOpen(false)} />
-
-      {/* Global Visual Search Overlay */}
       <VisualSearchModal isOpen={isVisualSearchOpen} onClose={() => setIsVisualSearchOpen(false)} />
     </>
   );
@@ -133,10 +144,10 @@ export const Navbar = () => {
 const NavLink = ({ to, children, active }: { to: string; children: React.ReactNode; active: boolean }) => (
   <Link
     to={to}
-    className={`px-4 py-2 rounded-xl text-xs font-semibold transition-all duration-200 ${
+    className={`px-4 py-2 rounded-xl text-xs font-extrabold transition-all duration-200 ${
       active 
-        ? "bg-primary text-primary-foreground shadow-sm" 
-        : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+        ? "neu-pressed text-primary font-black" 
+        : "text-muted-foreground hover:text-foreground"
     }`}
   >
     {children}
@@ -147,13 +158,12 @@ const MobileNavLink = ({ to, children, onClick, active }: { to: string; children
   <Link
     to={to}
     onClick={onClick}
-    className={`block px-4 py-3 rounded-2xl text-sm font-semibold transition-all ${
+    className={`block px-5 py-3.5 rounded-2xl text-sm font-bold transition-all ${
       active 
-        ? "bg-primary text-primary-foreground" 
-        : "hover:bg-muted text-foreground"
+        ? "neu-pressed text-primary" 
+        : "neu-flat hover:text-primary text-foreground"
     }`}
   >
     {children}
   </Link>
 );
-

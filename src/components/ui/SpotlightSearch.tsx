@@ -65,41 +65,41 @@ export const SpotlightSearch = ({ isOpen, onClose }: SpotlightSearchProps) => {
         onClick={onClose}
       />
 
-      <div className="w-full max-w-2xl bg-card/90 backdrop-blur-2xl border border-white/20 dark:border-white/10 rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+      <div className="w-full max-w-2xl neu-flat-lg rounded-4xl shadow-2xl overflow-hidden flex flex-col">
         {/* Search Input Bar */}
-        <div className="flex items-center px-6 py-4 border-b border-border/60 gap-3">
+        <div className="flex items-center px-6 py-4 border-b border-border/40 gap-3">
           <Search className="w-5 h-5 text-primary animate-pulse" />
           <input
             type="text"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="Search products, categories, or ask AI (Cmd+K)..."
-            className="flex-1 bg-transparent text-lg font-medium outline-none placeholder:text-muted-foreground"
+            placeholder="Search catalog or zero-cost AI index (⌘K)..."
+            className="flex-1 bg-transparent text-base font-bold text-foreground outline-none placeholder:text-muted-foreground"
             autoFocus
           />
           {query && (
             <button
               onClick={() => setQuery("")}
-              className="p-1.5 rounded-full hover:bg-muted text-muted-foreground transition-colors"
+              className="w-7 h-7 rounded-xl neu-btn flex items-center justify-center text-muted-foreground hover:text-foreground"
             >
               <X className="w-4 h-4" />
             </button>
           )}
-          <span className="hidden sm:inline-block px-2.5 py-1 text-xs font-mono bg-muted rounded-lg border border-border/80 text-muted-foreground">
+          <span className="hidden sm:inline-block neu-badge text-muted-foreground font-mono text-[10px]">
             ESC
           </span>
         </div>
 
         {/* Categories Quick Bar */}
-        <div className="flex items-center gap-2 px-6 py-3 border-b border-border/40 overflow-x-auto text-xs font-medium text-muted-foreground">
-          <span className="flex items-center gap-1 text-primary font-semibold">
+        <div className="flex items-center gap-2 px-6 py-3 neu-pressed border-b border-border/40 overflow-x-auto text-xs font-bold text-muted-foreground">
+          <span className="flex items-center gap-1 text-primary font-black whitespace-nowrap">
             <Sparkles className="w-3.5 h-3.5" /> Quick Filter:
           </span>
           {["Electronics", "Accessories", "Footwear", "Eyewear", "Bags"].map((cat) => (
             <button
               key={cat}
               onClick={() => setQuery(cat)}
-              className="px-3 py-1 rounded-full bg-muted/60 hover:bg-primary/20 hover:text-primary transition-all whitespace-nowrap"
+              className="neu-badge px-3 py-1 text-[11px] font-extrabold text-foreground hover:text-primary transition-all whitespace-nowrap cursor-pointer"
             >
               {cat}
             </button>
@@ -110,37 +110,39 @@ export const SpotlightSearch = ({ isOpen, onClose }: SpotlightSearchProps) => {
         <div className="max-h-[380px] overflow-y-auto p-4 space-y-2">
           {results.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
-              <p className="text-sm">No items matching "{query}"</p>
+              <p className="text-xs font-bold">No items matching "{query}"</p>
             </div>
           ) : (
             results.map((product) => (
               <div
                 key={product.id}
                 onClick={() => handleSelectProduct(product.id)}
-                className="group flex items-center justify-between p-3 rounded-2xl hover:bg-muted/80 cursor-pointer transition-all duration-200"
+                className="group flex items-center justify-between p-3.5 rounded-3xl neu-flat hover:shadow-neu-flat-lg cursor-pointer transition-all duration-200"
               >
                 <div className="flex items-center gap-4">
-                  <img
-                    src={product.image}
-                    alt={product.name}
-                    className="w-14 h-14 rounded-xl object-cover border border-border/40 group-hover:scale-105 transition-transform"
-                  />
+                  <div className="w-14 h-14 rounded-2xl neu-image-frame overflow-hidden flex-shrink-0">
+                    <img
+                      src={product.image}
+                      alt={product.name}
+                      className="w-full h-full object-cover group-hover:scale-108 transition-transform"
+                    />
+                  </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-semibold text-sm group-hover:text-primary transition-colors">
+                      <h4 className="font-extrabold text-sm text-foreground group-hover:text-primary transition-colors">
                         {product.name}
                       </h4>
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-primary/10 text-primary font-semibold">
+                      <span className="neu-badge text-[9px] text-primary font-black">
                         {product.category}
                       </span>
                     </div>
-                    <p className="text-xs text-muted-foreground line-clamp-1">{product.tagline}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-1 font-medium">{product.tagline}</p>
                   </div>
                 </div>
 
                 <div className="flex items-center gap-3">
-                  <span className="font-bold text-sm text-foreground">{formatPrice(product.price)}</span>
-                  <ArrowRight className="w-4 h-4 text-muted-foreground opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
+                  <span className="font-black text-sm text-foreground">{formatPrice(product.price)}</span>
+                  <ArrowRight className="w-4 h-4 text-primary opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
                 </div>
               </div>
             ))
@@ -148,9 +150,9 @@ export const SpotlightSearch = ({ isOpen, onClose }: SpotlightSearchProps) => {
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 bg-muted/40 border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground">
+        <div className="px-6 py-3 neu-flat border-t border-border/40 flex items-center justify-between text-xs text-muted-foreground font-bold">
           <span className="flex items-center gap-1.5">
-            <Tag className="w-3.5 h-3.5 text-primary" /> Instant AI Indexing Enabled
+            <Tag className="w-3.5 h-3.5 text-primary" /> Zero-Cost Instant Local Indexing
           </span>
           <span>{results.length} items available</span>
         </div>

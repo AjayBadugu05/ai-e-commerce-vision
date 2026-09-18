@@ -7,6 +7,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { WishlistProvider } from "@/contexts/WishlistContext";
 import { UserProvider } from "@/contexts/UserContext";
 import { ThemeProvider } from "@/hooks/useTheme";
+import { NeumorphicBackground } from "@/components/layout/NeumorphicBackground";
 import Index from "./pages/Index";
 import Shop from "./pages/Shop";
 import Categories from "./pages/Categories";
@@ -24,6 +25,7 @@ const App = () => (
         <UserProvider>
           <WishlistProvider>
             <CartProvider>
+              <NeumorphicBackground />
               <Toaster />
               <Sonner />
               <BrowserRouter>
@@ -47,4 +49,3 @@ const App = () => (
 );
 
 export default App;
-

@@ -1,83 +1,87 @@
 import { Link } from "react-router-dom";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
 
 const categories = [
   {
     id: "electronics",
-    name: "Electronics",
-    emoji: "🎧",
+    name: "Acoustic Tech",
+    tag: "Pro Audio Monitors",
     image: "https://images.unsplash.com/photo-1468495244123-6c6c332eeece?w=600&h=400&fit=crop",
-    count: "2.5K+",
-    color: "from-primary to-magic",
-  },
-  {
-    id: "fashion",
-    name: "Fashion",
-    emoji: "👗",
-    image: "https://images.unsplash.com/photo-1445205170230-053b83016050?w=600&h=400&fit=crop",
-    count: "5K+",
-    color: "from-secondary to-accent",
-  },
-  {
-    id: "home",
-    name: "Home & Living",
-    emoji: "🏠",
-    image: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=600&h=400&fit=crop",
-    count: "3K+",
-    color: "from-success to-primary",
+    count: "2.5K+ Items",
   },
   {
     id: "accessories",
-    name: "Accessories",
-    emoji: "⌚",
+    name: "Titanium Horology",
+    tag: "Grade 5 Timepieces",
     image: "https://images.unsplash.com/photo-1606760227091-3dd870d97f1d?w=600&h=400&fit=crop",
-    count: "1.5K+",
-    color: "from-magic to-secondary",
+    count: "1.2K+ Items",
+  },
+  {
+    id: "footwear",
+    name: "Kinetic Runners",
+    tag: "Carbon Fiber Footwear",
+    image: "https://images.unsplash.com/photo-1549298916-b41d501d3772?w=600&h=400&fit=crop",
+    count: "3.4K+ Items",
+  },
+  {
+    id: "travel",
+    name: "Leathercraft Travel",
+    tag: "Italian Full Grain",
+    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&h=400&fit=crop",
+    count: "1.8K+ Items",
   },
 ];
 
 export const CategoriesSection = () => {
   return (
-    <section className="container mx-auto px-4 py-20">
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
       {/* Header */}
-      <div className="text-center mb-12 animate-slide-up">
-        <span className="text-4xl mb-2 block">🛒</span>
-        <h2 className="font-display text-3xl md:text-5xl font-bold mb-2">
-          Shop by <span className="text-gradient-energy">Category</span>
-        </h2>
-        <p className="text-muted-foreground">
-          Find exactly what you're looking for!
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-4">
+        <div>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full neu-flat text-xs font-black text-primary mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-primary" />
+            <span>Curated Disciplines</span>
+          </div>
+          <h2 className="font-display text-3xl md:text-4xl font-extrabold tracking-tight">
+            Explore <span className="text-gradient-hero">Craft Collections</span>
+          </h2>
+        </div>
+
+        <Link to="/categories" className="neu-btn px-5 py-2.5 text-xs font-extrabold text-primary flex items-center gap-2">
+          <span>View All Collections</span>
+          <ArrowRight className="w-4 h-4" />
+        </Link>
       </div>
 
       {/* Categories Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        {categories.map((category, index) => (
+        {categories.map((category) => (
           <Link
             key={category.id}
-            to={`/categories/${category.id}`}
-            className="group relative aspect-[4/3] rounded-3xl overflow-hidden fun-card animate-slide-up"
-            style={{ animationDelay: `${index * 0.1}s` }}
+            to={`/shop`}
+            className="group neu-card p-4 flex flex-col justify-between hover:-translate-y-2 transition-all duration-300"
           >
-            {/* Image */}
-            <img
-              src={category.image}
-              alt={category.name}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
-            />
+            <div className="neu-image-frame aspect-[4/3] relative overflow-hidden bg-muted">
+              <img
+                src={category.image}
+                alt={category.name}
+                className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
+              />
+              <div className="absolute top-3 left-3 neu-badge text-[10px] text-primary font-black uppercase">
+                {category.count}
+              </div>
+            </div>
 
-            {/* Gradient Overlay */}
-            <div className={`absolute inset-0 bg-gradient-to-t ${category.color} opacity-60 group-hover:opacity-70 transition-opacity`} />
+            <div className="pt-4 flex items-center justify-between">
+              <div>
+                <h3 className="font-display font-extrabold text-base text-foreground group-hover:text-primary transition-colors">
+                  {category.name}
+                </h3>
+                <p className="text-xs text-muted-foreground font-medium">{category.tag}</p>
+              </div>
 
-            {/* Content */}
-            <div className="absolute inset-0 flex flex-col justify-end p-6 text-white">
-              <span className="text-4xl mb-2 animate-bounce-slow">{category.emoji}</span>
-              <h3 className="font-display text-2xl font-bold mb-1 group-hover:translate-x-2 transition-transform">
-                {category.name}
-              </h3>
-              <div className="flex items-center justify-between">
-                <p className="text-sm opacity-90">{category.count} Products</p>
-                <ArrowRight className="w-5 h-5 opacity-0 group-hover:opacity-100 translate-x-0 group-hover:translate-x-2 transition-all" />
+              <div className="w-9 h-9 rounded-xl neu-btn flex items-center justify-center text-primary group-hover:translate-x-1 transition-transform">
+                <ArrowRight className="w-4 h-4" />
               </div>
             </div>
           </Link>
